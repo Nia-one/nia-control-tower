@@ -2816,16 +2816,34 @@ function renderCockpit(){
   }
 
   if(tab==="FONO"){
-    const stage=readCol(d,["Stage"]);
-    const potential=readCol(d,["Potential Nests"]);
-    const live=readCol(d,["Live Nests"]);
-    const prospects=readCol(d,["Prospects"]);
-    const totalPotential=rows.reduce((a,r)=>a+(toNum(r[potential])||0),0);
-    const totalLive=rows.reduce((a,r)=>a+(toNum(r[live])||0),0);
+    const theatreCol    = readCol(d,["Theatre"]);
+    const corridorCol   = readCol(d,["Corridor"]);
+    const visitedCol    = readCol(d,["Visited"]);
+    const contractingCol= readCol(d,["Contracting"]);
+    const liveCol       = readCol(d,["Onboarded (Live)"]);
+    const droppedCol    = readCol(d,["Lost/Dropped"]);
+    const totalCol      = readCol(d,["Total Nests"]);
+    const totalVisited     = rows.reduce((a,r)=>a+(toNum(r[visitedCol])||0),0);
+    const totalContracting = rows.reduce((a,r)=>a+(toNum(r[contractingCol])||0),0);
+    const totalLive        = rows.reduce((a,r)=>a+(toNum(r[liveCol])||0),0);
+    const totalDropped     = rows.reduce((a,r)=>a+(toNum(r[droppedCol])||0),0);
+    const totalNests       = rows.reduce((a,r)=>a+(toNum(r[totalCol])||0),0);
     host.innerHTML =
-      cockpitCard("Live vs Target", `${inr(totalLive)} / 3,500`, `<div class="h-2 bg-nia-panel rounded-full overflow-hidden mb-4"><div class="h-full bg-nia-clay rounded-full" style="width:${clamp(totalLive/3500*100)}%"></div></div><div class="text-sm text-nia-mute">2,590 nests still need to become live or equivalent CM impact.</div>`, "flag") +
-      cockpitCard("Stage Bottleneck", `${inr(totalPotential-totalLive)} not live`, barRows(rows.map(r=>({label:r[stage], value:inr(toNum(r[potential])||0), width:clamp((toNum(r[potential])||0)/(totalPotential||1)*100), alert:String(r[stage]).includes("Visited")})), "red"), "funnel") +
-      cockpitCard("Conversion Behavior", "48h SLA", `<div class="text-sm text-nia-mute leading-relaxed">Visited owners are not progress until they move to contracting. Make every visit produce standard commercials, deposit ask, owner, and next date.</div>`, "timer-reset");
+      cockpitCard("Live vs Target", inr(totalLive) + " / 3,500",
+        '<div class="h-2 bg-nia-panel rounded-full overflow-hidden mb-4"><div class="h-full bg-nia-clay rounded-full" style="width:' + clamp(totalLive/3500*100) + '%"></div></div>' +
+        '<div class="text-sm text-nia-mute">' + (3500-totalLive) + ' nests still need to become live or equivalent CM impact.</div>',
+        "flag") +
+      cockpitCard("Stage Bottleneck", inr(totalVisited) + " visited",
+        barRows([
+          {label:"Visited",      value:inr(totalVisited),     width:clamp(totalVisited/totalNests*100),     alert:true},
+          {label:"Contracting",  value:inr(totalContracting), width:clamp(totalContracting/totalNests*100), alert:totalContracting<50},
+          {label:"Live",         value:inr(totalLive),        width:clamp(totalLive/totalNests*100)},
+          {label:"Lost/Dropped", value:inr(totalDropped),     width:clamp(totalDropped/totalNests*100),     alert:totalDropped>200}
+        ], "red"),
+        "funnel") +
+      cockpitCard("Conversion Behavior", "48h SLA",
+        '<div class="text-sm text-nia-mute leading-relaxed">Visited owners are not progress until they move to contracting. Make every visit produce standard commercials, deposit ask, owner, and next date.</div>',
+        "timer-reset");
     return;
   }
 
