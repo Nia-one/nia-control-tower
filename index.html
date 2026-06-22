@@ -1913,7 +1913,15 @@ const CONFIG = {
   refreshSeconds: 300,
 
   summary: [
-    { tab:"DOR", label:"EBITDA gap (₹L)", agg:"static", value:24.4, fmt:"num", alertIfAbove:0, trend:"down" },
+    {
+  tab:"DOR",
+  label:"EBITDA gap (₹L)",
+  agg:"read",
+  col:"Gap",
+  fmt:"num",
+  alertIfAbove:0,
+  trend:"down"
+},
     { tab:"CM Actions", label:"CM plan achieved", agg:"ratio", num:"Realized (₹L)", den:"Plan (₹L)", fmt:"pct", target:100, trend:"up" },
     { tab:"CM Actions", label:"CM gap remaining (₹L)", agg:"sum", col:"Gap (₹L)", fmt:"num", alertIfAbove:0, trend:"down" },
     { tab:"Studios", label:"Active occupancy", agg:"ratio", num:"Occupied", den:"Contracted", fmt:"pct", target:95, trend:"up" },
@@ -2226,6 +2234,11 @@ function aggregateOn(tabIdx,k){
       const den=toNum(r[di]);
       if(den!=null && den!==0){ n+=(toNum(r[ni])||0); dd+=den; }
     });
+    console.log("CM Actions Ratio Debug");
+console.log("Rows:", R.length);
+console.log("Numerator:", n);
+console.log("Denominator:", dd);
+console.log("Result:", (n / dd) * 100);
     return dd? (n/dd)*100:null;
   }
   if(k.agg==="count"){ return R.length; }
