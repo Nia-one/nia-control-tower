@@ -2971,7 +2971,12 @@ function renderTable(){
     return; 
   }
   
-  let rows=sortedRows(d);
+  let rows=sortedRows(d).filter(r =>
+  r.some(v => {
+    const n = toNum(v);
+    return (n != null && n !== 0) || (n == null && String(v ?? "").trim() !== "");
+  })
+);
 
   const numCols=d.headers.map((_,ci)=>d.rows.length && d.rows.filter(r=>toNum(r[ci])!=null).length>d.rows.length*0.6);
   const hint=document.getElementById("detailHint");
