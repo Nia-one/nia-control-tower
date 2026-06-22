@@ -2626,6 +2626,10 @@ function livePriority(name){
         const theatreCol    = readCol(sd,["Theatre"]);
         const contractedCol = readCol(sd,["Contracted"]);
         const occupiedCol   = readCol(sd,["Occupied"]);
+        console.log("Theatre:", theatreCol);
+console.log("Contracted:", contractedCol);
+console.log("Occupied:", occupiedCol);
+console.log(sd.headers);
         const wlg = sd.rows.find(r => String(r[theatreCol]).toLowerCase().includes("wellington"));
         if(wlg){
           const contracted = toNum(wlg[contractedCol]) || 0;
