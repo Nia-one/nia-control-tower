@@ -2664,6 +2664,70 @@ function livePriority(name){
         }
       }
     }
+    // Monetise member wallet: read Essentials row from CM Actions.
+// Source of truth = CM Actions driver "Essentials".
+if(name === "Monetise member wallet"){
+  const ci = tabIndexByLabel("CM Actions");
+  const cd = state.data[ci];
+
+  if(cd && cd.headers && cd.rows && cd.rows.length){
+
+    const driverCol   = readCol(cd,["Driver"]);
+    const planCol     = readCol(cd,["Plan (₹L)"]);
+    const realizedCol = readCol(cd,["Realized (₹L)"]);
+    const gapCol      = readCol(cd,["Gap (₹L)"]);
+
+    const row = cd.rows.find(r =>
+      String(r[driverCol]).toLowerCase().includes("essentials")
+    );
+
+    if(row){
+
+      const plan = toNum(row[planCol]) || 0;
+      const realized = toNum(row[realizedCol]) || 0;
+
+      const gap =
+        gapCol != null && row[gapCol] !== ""
+          ? (toNum(row[gapCol]) || 0)
+          : Math.max(plan - realized,0);
+
+      const pct = plan
+        ? Math.round(realized / plan * 100)
+        : 0;
+
+      base.currentRate =
+        (Math.round(realized * 100) / 100) + "L realised";
+
+      base.driver =
+        (Math.round(gap * 100) / 100) + "L CM gap";
+
+      base.gapLabel =
+        (Math.round(gap * 100) / 100) + "L gap";
+
+      base.done = clamp(pct);
+      base.left = 100 - base.done;
+
+      const today = new Date();
+      const target = new Date(today.getFullYear(),5,30);
+
+      const daysLeft = Math.ceil(
+        (target -
+          new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate()
+          )) / 86400000
+      );
+
+      base.askRate =
+        daysLeft >= 1
+          ? (Math.round((gap / daysLeft) * 100) / 100) + "L/day"
+          : gap > 0
+              ? (Math.round(gap * 100) / 100) + "L overdue"
+              : "target met";
+    }
+  }
+}
     // Stop check-out leakage: read net movement from the Movement tab
     // (fed by the "Checkin - Checkout" source). Current rate = sum of
     // Wellington Net Added; driver = worst single studio by Net Added.
