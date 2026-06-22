@@ -2172,17 +2172,29 @@ async function loadTab(idx){
     state.data[idx]={...s, fetchedAt:new Date(), status:"sample"};
     return;
   }
-  try{
-    const res=await fetch(gvizUrl(tab), {cache:"no-store"});
-    if(!res.ok) throw new Error("HTTP "+res.status);
-    const txt=await res.text();
-    const parsed=parseCSV(txt);
-    if(!parsed.headers.length) throw new Error("empty");
-    state.data[idx]={...parsed, fetchedAt:new Date(), status:"live"};
-  }catch(e){
-    const s=SAMPLE[tab.label]||{headers:[],rows:[]};
-    state.data[idx]={...s, fetchedAt:new Date(), status:"error", error:String(e.message||e)};
+  const attempts=3;
+  let lastErr=null;
+  for(let a=0;a<attempts;a++){
+    try{
+      const res=await fetch(gvizUrl(tab), {cache:"no-store"});
+      if(!res.ok) throw new Error("HTTP "+res.status);
+      const txt=await res.text();
+      // Google returns an HTML login/error page (not CSV) when the sheet
+      // is not shared "anyone with link". Detect that explicitly.
+      if(/^\s*<(!doctype|html)/i.test(txt)) throw new Error("not public (got HTML, check sheet sharing)");
+      const parsed=parseCSV(txt);
+      if(!parsed.headers.length) throw new Error("empty");
+      state.data[idx]={...parsed, fetchedAt:new Date(), status:"live"};
+      return;
+    }catch(e){
+      lastErr=e;
+      if(a<attempts-1) await new Promise(r=>setTimeout(r, 600*(a+1))); // backoff
+    }
   }
+  // All retries failed. Keep sample rows for layout, but mark status "error"
+  // so the UI shows "data unavailable", never the sample number as if live.
+  const s=SAMPLE[tab.label]||{headers:[],rows:[]};
+  state.data[idx]={...s, fetchedAt:new Date(), status:"error", error:String(lastErr&&lastErr.message||lastErr)};
 }
 
 async function loadAll(){
@@ -2664,24 +2676,48 @@ function livePriority(name){
         const theatreCol = readCol(md,["Theatre"]);
         const studioCol  = readCol(md,["Studio"]);
         const netCol     = readCol(md,["Net Added","Net 15d"]);
+        const inCol      = readCol(md,["Check-ins (Month)","Check-ins"]);
+        const outCol     = readCol(md,["Check-outs (Month)","Check-outs"]);
         if(netCol != null){
-          const wlgNet = md.rows
-            .filter(r => String(r[theatreCol]).toLowerCase().includes("wellington"))
-            .reduce((a,r)=>a+(toNum(r[netCol])||0),0);
+          // Company-wide net movement across all theatres (matches Movement tab total).
+          const totalNet = md.rows.reduce((a,r)=>a+(toNum(r[netCol])||0),0);
+          // Gross check-ins / check-outs to express recovery progress.
+          let totIn = 0, totOut = 0;
+          md.rows.forEach(r=>{
+            totIn  += (inCol  != null ? (toNum(r[inCol])  || 0) : 0);
+            totOut += (outCol != null ? (toNum(r[outCol]) || 0) : 0);
+          });
+          // Worst single studio drives the leak.
           let worst = null;
           md.rows.forEach(r=>{
             const n = toNum(r[netCol]);
             if(n == null) return;
             if(worst == null || n < worst.net) worst = {name:String(r[studioCol]).replace(/^Nia Nest\s*/i,"").trim(), net:n};
           });
-          base.currentRate = inr(wlgNet) + " net WLG";
+          // "Done" = how much of gross exits were already offset by fresh check-ins.
+          // 100% means refill kept pace (net >= 0); lower means leakage outran fill.
+          const recovery = totOut > 0 ? clamp(Math.round(totIn / totOut * 100)) : (totalNet >= 0 ? 100 : 0);
+          base.currentRate = inr(totalNet) + " net";
           if(worst){
             base.driver   = worst.name + ": " + inr(worst.net);
-            base.gapLabel = inr(Math.abs(worst.net)) + " net at " + worst.name;
           }
-          base.askRate = "0+ net movement";
-          base.done = wlgNet >= 0 ? 100 : 0;
+          base.askRate  = "0+ net movement";
+          // Big number shows the real net figure, not a fake percentage.
+          base.bigValue = inr(totalNet);
+          base.bigLabel = "net this month";
+          base.doneLabel = recovery + "% refilled";
+          base.gapLabel  = inr(Math.abs(Math.min(totalNet,0))) + " exits to recover";
+          base.done = recovery;
           base.left = 100 - base.done;
+          base.dataStatus = md.status || "sample";
+          base.recordCount = md.rows.length;
+          if(md.status === "error"){
+            base.bigValue = "—";
+            base.bigLabel = "data unavailable";
+            base.doneLabel = "fetch failed";
+            base.gapLabel = "check sheet sharing";
+            base.currentRate = "fetch failed";
+          }
           used = true;
         }
       }
@@ -2694,22 +2730,23 @@ function livePriority(name){
           const studioCol  = readCol(td,["Studio"]);
           const deltaCol   = readCol(td,["Occ Delta"]);
           if(deltaCol != null){
-            const wlgNet = td.rows
-              .filter(r => String(r[theatreCol]).toLowerCase().includes("wellington"))
-              .reduce((a,r)=>a+(toNum(r[deltaCol])||0),0);
+            const totalDelta = td.rows.reduce((a,r)=>a+(toNum(r[deltaCol])||0),0);
             let worst = null;
             td.rows.forEach(r=>{
               const dd = toNum(r[deltaCol]);
               if(dd == null) return;
               if(worst == null || dd < worst.delta) worst = {name:String(r[studioCol]).replace(/^Nia Nest\s*/i,"").trim(), delta:dd};
             });
-            base.currentRate = inr(wlgNet) + " net WLG";
+            base.currentRate = inr(totalDelta) + " net";
             if(worst){
               base.driver   = worst.name + ": " + inr(worst.delta);
-              base.gapLabel = inr(Math.abs(worst.delta)) + " net at " + worst.name;
             }
             base.askRate = "0+ net movement";
-            base.done = wlgNet >= 0 ? 100 : 0;
+            base.bigValue  = inr(totalDelta);
+            base.bigLabel  = "net this month";
+            base.doneLabel = (totalDelta >= 0 ? 100 : 0) + "% refilled";
+            base.gapLabel  = inr(Math.abs(Math.min(totalDelta,0))) + " exits to recover";
+            base.done = totalDelta >= 0 ? 100 : 0;
             base.left = 100 - base.done;
           }
         }
@@ -2757,10 +2794,13 @@ const PRIORITY_PROGRESS = {
   "Stop check-out leakage": {
     done: 0,
     left: 100,
-    currentRate: "-89 net WLG",
+    bigValue: "-188",
+    bigLabel: "net this month",
+    doneLabel: "0% refilled",
+    currentRate: "-188 net",
     askRate: "0+ net movement",
-    driver: "Munirappa: -80",
-    gapLabel: "80 net at Munirappa",
+    driver: "Munirappa: -78",
+    gapLabel: "188 exits to recover",
     unit: "Action"
   },
   "Monetise member wallet": {
@@ -2790,11 +2830,11 @@ function progressPriorityCard(r){
     <div class="mb-4">
       <div class="flex items-end justify-between gap-3 mb-2">
         <div>
-          <div class="text-3xl font-bold ${String(risk).includes("Critical") ? "text-nia-clay" : "text-nia-ink"}">${left}%</div>
-          <div class="text-[11px] uppercase tracking-widest text-nia-mute font-semibold">left</div>
+          <div class="text-3xl font-bold ${String(risk).includes("Critical") ? "text-nia-clay" : "text-nia-ink"}">${p.bigValue != null ? esc(p.bigValue) : left + "%"}</div>
+          <div class="text-[11px] uppercase tracking-widest text-nia-mute font-semibold">${p.bigLabel != null ? esc(p.bigLabel) : "left"}${p.dataStatus ? ` · <span class="${p.dataStatus==='live'?'text-nia-green':'text-nia-clay'}">${p.dataStatus==='live'?'live '+(p.recordCount||0)+' studios':(p.dataStatus==='error'?'fetch failed':'sample data')}</span>` : ""}</div>
         </div>
         <div class="text-right">
-          <div class="text-sm font-bold text-nia-ink">${done}% done</div>
+          <div class="text-sm font-bold text-nia-ink">${p.doneLabel != null ? esc(p.doneLabel) : done + "% done"}</div>
           <div class="text-xs text-nia-mute">${esc(gap)}</div>
         </div>
       </div>
@@ -3040,6 +3080,13 @@ function renderCockpit(){
     const ci=readCol(d,["Check-ins (Month)","Check-ins 15d"]);
     const co=readCol(d,["Check-outs (Month)","Check-outs 15d"]);
     const net=readCol(d,["Net Added","Net 15d"]);
+    if(d.status==="error"){
+      host.innerHTML =
+        cockpitCard("Net Movement (Month)", "—", `<div class="text-sm text-nia-clay font-semibold leading-relaxed">Live fetch failed — figure not shown to avoid reporting stale sample data.</div><div class="text-sm text-nia-mute leading-relaxed mt-2">Likely cause: the source sheet is not shared as "Anyone with the link can view", or a transient network/rate-limit. Use Refresh to retry.</div>`, "door-open") +
+        cockpitCard("Source", "Google Sheet (gviz CSV)", `<div class="text-sm text-nia-mute leading-relaxed">Movement tab gid <code>1797036547</code>. Error: ${esc(d.error||"unknown")}.</div>`, "alert-triangle") +
+        cockpitCard("Behavior Rule", "Retention before refill", `<div class="text-sm text-nia-mute leading-relaxed">If net movement is negative, first diagnose why people are leaving, then refill. Otherwise demand creation leaks out the back door.</div>`, "shield-alert");
+      return;
+    }
     const totalNet=rows.reduce((a,r)=>a+(toNum(r[net])||0),0);
     const worst=rows.slice().sort((a,b)=>(toNum(a[net])||0)-(toNum(b[net])||0))[0];
     host.innerHTML =
