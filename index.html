@@ -2233,13 +2233,7 @@ function aggregateOn(tabIdx,k){
     R.forEach(r=>{
       const den=toNum(r[di]);
       if(den!=null && den!==0){ n+=(toNum(r[ni])||0); dd+=den; }
-    });
-    console.log("CM Actions Ratio Debug");
-console.log("Rows:", R.length);
-console.log("Numerator:", n);
-console.log("Denominator:", dd);
-console.log("Result:", (n / dd) * 100);
-    return dd? (n/dd)*100:null;
+    });return dd? (n/dd)*100:null;
   }
   if(k.agg==="count"){ return R.length; }
   return null;
