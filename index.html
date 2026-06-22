@@ -2227,6 +2227,22 @@ function aggregateOn(tabIdx,k){
       if(den!=null && den!==0){ n+=(toNum(r[ni])||0); dd+=den; }
     });return dd? (n/dd)*100:null;
   }
+  if(k.agg==="read"){
+
+    const ci = colIndex(H, k.col);
+
+    if(ci < 0) return null;
+
+    // Read first non-empty value from the column
+    for(const r of R){
+
+        const v = toNum(r[ci]);
+
+        if(v != null) return v;
+    }
+
+    return null;
+}
   if(k.agg==="count"){ return R.length; }
   return null;
 }
