@@ -1924,7 +1924,7 @@ const CONFIG = {
     { tab:"Essentials", label:"Wallet attach", agg:"ratio", num:"Essentials Revenue (₹L)", den:"Studio Revenue (₹L)", fmt:"pct", target:3.9, trend:"up" },
     { tab:"Essentials Pilot", label:"Pilot cum GMV (₹)", agg:"max", col:"Cum GMV (₹)", fmt:"num", trend:"up" },
     { tab:"Collections", label:"Membership fee due (₹L)", agg:"sum", col:"Due (₹L)", fmt:"num", alertIfAbove:0, trend:"down" },
-    { tab:"Movement", label:"15d net movement", agg:"sum", col:"Net 15d", fmt:"num", alertIfBelow:0, trend:"up" },
+    { tab:"Movement", label:"Net movement (month)", agg:"sum", col:"Net Added", fmt:"num", alertIfBelow:0, trend:"up" },
     { tab:"FONO Ease", label:"Easy expected nests", agg:"sum", col:"Expected Nests", fmt:"num", target:900, trend:"up" },
     { tab:"Priorities", label:"Priority workstreams", agg:"count", fmt:"num", trend:"down" }
   ],
@@ -1953,10 +1953,10 @@ const SAMPLE = {
     headers: ["Priority","Progress","Current","Target","Gap","Risk","Insight","Behavior to drive"],
     rows: [
       ["Convert FONO funnel","26% done / 74% left","910 live","3,500 target","2,590 nests","Critical","5,799 potential nests, but most are stuck in Visited; only 184 are contracting.","48h owner-to-live SLA, standard commercials, corridor closer, daily conversion metric."],
-      ["Fix Wellington occupancy drag","72% done / 28% left","72.2%","95.0%","282 nests","Critical","Wellington is the named occupancy drag: too much live or near-live capacity without enough B2B pull.","Freeze new supply, run daily fill war-room, convert Hosur FONO into paid occupancy."],
-      ["Close B2B conversion","13% done / 87% left","0.26L realised","2.0L target","1.74L CM gap","Critical","B2B 500 new nests is only 13% achieved.","Assign named account owner and next close date for each enterprise prospect."],
+      ["Fix Wellington occupancy drag","73% done / 27% left","73.0%","95.0%","334 nests","Critical","Wellington is the named occupancy drag: too much live or near-live capacity without enough B2B pull.","Freeze new supply, run daily fill war-room, convert Hosur FONO into paid occupancy."],
+      ["Close B2B conversion","69% done / 31% left","1.57L realised","2.28L target","0.71L CM gap","Watch","B2B 500 new nests is 69% achieved against the CM Actions plan.","Assign named account owner and next close date for each enterprise prospect."],
       ["Recover collections","54% done / 46% left","37.4L collected","59.9L target","22.6L due","Critical","Collections drag is concentrated in Coromandel, Wellington, and Deccan studios with weak member-fee pace.","Daily named-studio collection sprint with payer, amount, and promise date."],
-      ["Stop check-out leakage","0% done / 100% left","-64 net WLG","0+ target","80 exits at Munirappa","Critical","Negative movement means demand generation leaks before it helps occupancy.","Retention root-cause review before refill; every exit needs a reason code."],
+      ["Stop check-out leakage","0% done / 100% left","-89 net WLG","0+ target","80 net at Munirappa","Critical","Negative movement means demand generation leaks before it helps occupancy.","Retention root-cause review before refill; every exit needs a reason code."],
       ["Monetise member wallet","34% done / 66% left","2.0% attach","3.9%+ attach","1.2L CM gap","At Risk","Essentials is 0.84L vs 2.5L target; attach is late and ad hoc.","Attach Curry + Essentials at check-in with one default bundle per new member."]
     ]
   },
@@ -1997,7 +1997,7 @@ const SAMPLE = {
     rows: [
       ["Work - Existing + New + Flipkart","6.9","6.65","0.25","96.4","On Track","Protect the run-rate; audit margin leakage by client before adding new supply."],
       ["Living","10.63","8.71","1.92","82.0","Watch","Fill Wellington active gaps; freeze poor-fit supply and renegotiate rent where CM is negative."],
-      ["B2B 500 new nests","2.0","0.26","1.74","12.8","Critical","Name one BD owner per enterprise account; daily close review until 500 nests are signed."],
+      ["B2B 500 new nests","2.28","1.57","0.71","68.8","Watch","Name one BD owner per enterprise account; daily close review until 500 nests are signed."],
       ["FONO 3500 new nests","10.5","1.18","9.32","11.2","Critical","Move visited owners into contracting with a 48h owner-to-live checklist."],
       ["Finance Sessions for GIG workers","1.8","0.6","1.2","33.3","At Risk","Attach finance session at check-in and payroll touchpoints; make it default, not optional."],
       ["Tax Buddy Services for GIG workers","0.0","0.0","0.0","","Watch","No June target in base sheet; park unless it unlocks a paid bundle."],
@@ -2025,20 +2025,21 @@ const SAMPLE = {
   "Studios": {
     headers: ["Theatre","Studios","Contracted","Occupied","Occupancy %","CM (₹L)","Target CM (₹L)","Variance (₹L)","Risk","Behavior to drive"],
     rows: [
-      ["Coromandel","8","547","511","93.4","3.09","2.18","0.91","On Track","Protect occupancy and upsell wallet."],
-      ["Deccan","2","296","270","91.2","0.41","0.52","-0.11","At Risk","Fix CM leakage despite healthy occupancy."],
-      ["Rajputana","29","1928","1783","92.5","3.64","3.76","-0.12","At Risk","Fix CM leakage despite healthy occupancy."],
-      ["Wellington","12","1028","795","77.3","1.57","4.17","-2.6","At Risk","Fill active capacity."]
+      ["Coromandel","10","759","663","87.4","2.7","","","Watch","Protect occupancy and upsell wallet."],
+      ["Deccan","2","296","270","91.2","0.4","","","Watch","Fix CM leakage despite healthy occupancy."],
+      ["Rajputana","31","2011","1854","92.2","3.7","","","Watch","Fix CM leakage; protect high-occupancy studios."],
+      ["Wellington","14","1236","902","73.0","1.0","","","Critical","Fill active capacity via B2B and FONO."]
     ]
   },
   "FONO": {
-    headers: ["Stage","Prospects","Potential Nests","Live Nests","Conversion %","Risk","Behavior to drive"],
+    headers: ["Theatre","Corridor","Lead","Visited","Contracting","Onboarded (Live)","Lost/Dropped","Total Nests","Conversion %","Risk","Behavior to drive"],
     rows: [
-      ["Visited","50","3947","0","0.0","Critical","Convert top visited owners to contracting; no more visits without commercial next step."],
-      ["Onboarded (Live)","13","910","910","100.0","On Track","Ramp occupancy and cash collection immediately."],
-      ["Lost/Dropped","10","708","0","0.0","At Risk","Run loss review; revive only if economics clear."],
-      ["Contracting","4","184","0","0.0","Watch","Same-day paperwork and deposit closure."],
-      ["Lead","3","50","0","0.0","At Risk","Qualify capacity and owner intent before site effort."]
+      ["CORO","Sriperumbudur","202","1051","0","202","328","1783","11.3","At Risk","Convert visited owners to contracting with 48h SLA."],
+      ["CORO","Oragadam","0","0","0","0","0","0","0","Critical","Qualify capacity and owner intent before site effort."],
+      ["WLG","Hosur","0","771","72","292","365","1500","19.5","Watch","Same-day paperwork and deposit closure."],
+      ["RN","Farukhnagar","0","1127","36","368","172","1703","21.6","Watch","Same-day paperwork and deposit closure."],
+      ["RN","Dadri","0","286","76","48","48","458","10.5","Watch","Same-day paperwork and deposit closure."],
+      ["DCN","Pune","0","128","0","0","0","128","0","Critical","Convert visited owners to contracting with 48h SLA."]
     ]
   },
   "FONO Ease": {
@@ -2088,20 +2089,18 @@ const SAMPLE = {
     ]
   },
   "Movement": {
-    headers: ["Theatre","Studio","Contracted","Check-ins 15d","Check-outs 15d","Net 15d","Movement Score","Why likely to drag","Action"],
+    headers: ["Theatre","Studio Code","Studio","Contracted","Occupied","Check-ins (Month)","Check-outs (Month)","Net Added","Movement Score","Why likely to drag","Action"],
     rows: [
-      ["Wellington","Nia Nest Munirappa","160","18","98","-80","95","Largest 15d net loss; also large collection due.","Retention root-cause review, exit interview pattern, collections recovery."],
-      ["Coromandel","Nia Nest Arvind","120","5","17","-12","70","High check-outs and collection due.","Stop churn and recover rent before refilling."],
-      ["Rajputana","Nia Nest Parul Yadav","102","0","11","-11","68","Zero check-ins, 11 check-outs.","Demand generation and manager accountability."],
-      ["Rajputana","Nia Nest Ompal","90","2","11","-9","64","Net outflow at a large active studio.","Retention follow-up on recent exits."],
-      ["Wellington","Nia Nest Rathnamma","112","5","13","-8","61","Net loss and no membership fee collected.","Retention plus payment block resolution."],
-      ["Rajputana","Nia Nest - Udaibir","48","5","11","-6","56","Outflow exceeds check-ins.","Replace exits with known demand source."],
-      ["Wellington","Nia Nest Britto","64","2","7","-5","53","Low check-in velocity.","Studio manager weekly fill plan."],
-      ["Rajputana","Nia Nest Kamala Devi Yadhav","75","0","5","-5","53","No check-ins against exits.","Demand owner for the studio."],
-      ["Coromandel","Nia Nest - Syed","75","1","5","-4","50","Churn trend visible.","Member retention and dues check."],
-      ["Rajputana","Nia Nest Narender | Rajbala","54","0","4","-4","50","No replacement check-ins.","Refill from waiting list / enterprise demand."],
-      ["Wellington","Nia Nest Dayananda Sagar AR","65","0","4","-4","50","No check-ins, net loss.","Refill plan required."],
-      ["Wellington","Nia Nest Umapahti","110","16","19","-3","48","Healthy check-ins but still net negative.","Keep attach playbook, reduce exits."]
+      ["Wellington","WLG-012","Nia Nest Munirappa","160","68","18","98","-80","1","Net -80 this month (98 out vs 18 in).","Retention root-cause review before refill; every exit needs a reason code."],
+      ["Coromandel","CORO-007","Nia Nest Arvind","120","100","5","17","-12","38","Net -12 this month (17 out vs 5 in).","Studio manager retention + fill plan this week."],
+      ["Rajputana","RN-031","Nia Nest Parul Yadav","102","91","0","11","-11","39","Net -11 this month (11 out vs 0 in).","Studio manager retention + fill plan this week."],
+      ["Rajputana","RN-018","Nia Nest Ompal","90","79","2","11","-9","41","Net -9 this month (11 out vs 2 in).","Studio manager retention + fill plan this week."],
+      ["Wellington","WLG-009","Nia Nest Rathnamma","112","89","5","13","-8","42","Net -8 this month (13 out vs 5 in).","Studio manager retention + fill plan this week."],
+      ["Rajputana","RN-024","Nia Nest - Udaibir","48","31","5","11","-6","44","Net -6 this month (11 out vs 5 in).","Studio manager retention + fill plan this week."],
+      ["Wellington","WLG-015","Nia Nest Britto","64","50","2","7","-5","45","Net -5 this month (7 out vs 2 in).","Studio manager retention + fill plan this week."],
+      ["Coromandel","CORO-003","Nia Nest Syed","75","73","1","5","-4","46","Net -4 this month (5 out vs 1 in).","Studio manager retention + fill plan this week."],
+      ["Wellington","WLG-005","Nia Nest Umapahti","110","82","16","19","-3","47","Net -3 this month (19 out vs 16 in).","Studio manager retention + fill plan this week."],
+      ["Wellington","WLG-021","Nia Nest Venkatesh","40","47","9","2","7","57","Net +7 this month; positive movement.","Protect momentum; keep fill pace ahead of exits."]
     ]
   },
   "Studio Trends": {
@@ -2552,29 +2551,199 @@ function getRiskBadgeClass(text) {
   return "bg-nia-panel text-nia-body border-nia-hair";
 }
 
+// Live-data resolver: overrides static PRIORITY_PROGRESS fields with values
+// computed from the loaded tab data so drivers/rates reflect the live sheet.
+function livePriority(name){
+  const base = {...(PRIORITY_PROGRESS[name] || {})};
+  try {
+    // FONO funnel: sum Visited / live nests straight from the FONO tab.
+    // Live sheet is one row PER CORRIDOR with columns Visited, Onboarded (Live),
+    // so we aggregate down the columns (matches the FONO cockpit logic).
+    if(name === "Convert FONO funnel"){
+      const fi = tabIndexByLabel("FONO");
+      const fd = state.data[fi];
+      if(fd && fd.headers && fd.rows && fd.rows.length){
+        const visitedCol = readCol(fd,["Visited"]);
+        const liveCol    = readCol(fd,["Onboarded (Live)","Live Nests"]);
+        const sum = col => col == null ? null
+          : fd.rows.reduce((a,r)=>a+(toNum(r[col])||0),0);
+        const visited = sum(visitedCol);
+        const live    = sum(liveCol);
+        if(visited != null) base.driver = "Visited: " + inr(visited) + " nests";
+        if(live != null){
+          base.currentRate = inr(live) + " live nests";
+          base.done = clamp(Math.round(live / 3500 * 100));
+          base.left = 100 - base.done;
+          // Ask rate = remaining gap to target, spread over days left to 30 June.
+          const gap = Math.max(3500 - live, 0);
+          base.gapLabel = inr(gap) + " nests";
+          const today = new Date();
+          const target = new Date(today.getFullYear(), 5, 30); // 5 = June (0-indexed)
+          const msPerDay = 86400000;
+          let daysLeft = Math.ceil((target - new Date(today.getFullYear(), today.getMonth(), today.getDate())) / msPerDay);
+          if(daysLeft >= 1){
+            base.askRate = inr(Math.ceil(gap / daysLeft)) + " nests/day";
+          } else {
+            // On/after 30 June the window has closed — show the full gap as overdue.
+            base.askRate = gap > 0 ? inr(gap) + " nests overdue" : "target met";
+          }
+        }
+      }
+    }
+
+    // Wellington occupancy drag: pull contracted/occupied from the Studios tab.
+    if(name === "Fix Wellington occupancy drag"){
+      const si = tabIndexByLabel("Studios");
+      const sd = state.data[si];
+      if(sd && sd.headers && sd.rows && sd.rows.length){
+        const theatreCol    = readCol(sd,["Theatre"]);
+        const contractedCol = readCol(sd,["Contracted"]);
+        const occupiedCol   = readCol(sd,["Occupied"]);
+        const wlg = sd.rows.find(r => String(r[theatreCol]).toLowerCase().includes("wellington"));
+        if(wlg){
+          const contracted = toNum(wlg[contractedCol]) || 0;
+          const occupied   = toNum(wlg[occupiedCol]) || 0;
+          // Always compute occupancy; the sheet's "Occupancy %" column is
+          // unreliable (can show the occupied count as a percent).
+          const occPct     = contracted ? occupied / contracted * 100 : 0;
+          const gap = Math.max(contracted - occupied, 0); // Contracted - Occupied
+          base.currentRate = (Math.round(occPct * 10) / 10) + "% occupancy";
+          base.driver = inr(gap) + " nests short";
+          base.gapLabel = inr(gap) + " nests";
+          base.done = clamp(Math.round(occPct));
+          base.left = 100 - base.done;
+          // Daily fill ask to clear empty nests by 30 June.
+          const today = new Date();
+          const target = new Date(today.getFullYear(), 5, 30);
+          const daysLeft = Math.ceil((target - new Date(today.getFullYear(), today.getMonth(), today.getDate())) / 86400000);
+          base.askRate = daysLeft >= 1 ? inr(Math.ceil(gap / daysLeft)) + " nests/day"
+                       : (gap > 0 ? inr(gap) + " nests overdue" : "target met");
+        }
+      }
+    }
+    // Close B2B conversion: pull Plan/Realized/Gap from the CM Actions tab
+    // (driver row "B2B 500 new nests"). Source of truth for B2B CM.
+    if(name === "Close B2B conversion"){
+      const ci = tabIndexByLabel("CM Actions");
+      const cd = state.data[ci];
+      if(cd && cd.headers && cd.rows && cd.rows.length){
+        const driverCol   = readCol(cd,["Driver"]);
+        const planCol     = readCol(cd,["Plan (₹L)"]);
+        const realizedCol = readCol(cd,["Realized (₹L)"]);
+        const gapCol      = readCol(cd,["Gap (₹L)"]);
+        const b2b = cd.rows.find(r => String(r[driverCol]).toLowerCase().includes("b2b"));
+        if(b2b){
+          const plan     = toNum(b2b[planCol]) || 0;
+          const realized = toNum(b2b[realizedCol]) || 0;
+          const gap      = gapCol != null && b2b[gapCol] !== "" ? (toNum(b2b[gapCol]) || 0)
+                          : Math.max(plan - realized, 0);
+          const achPct   = plan ? Math.round(realized / plan * 100) : 0;
+          base.currentRate = (Math.round(realized * 100) / 100) + "L realised";
+          base.driver      = (Math.round(gap * 100) / 100) + "L CM gap";
+          base.gapLabel    = (Math.round(gap * 100) / 100) + "L gap";
+          base.done = clamp(achPct);
+          base.left = 100 - base.done;
+          // Daily CM ask to close the gap by 30 June.
+          const today = new Date();
+          const target = new Date(today.getFullYear(), 5, 30);
+          const daysLeft = Math.ceil((target - new Date(today.getFullYear(), today.getMonth(), today.getDate())) / 86400000);
+          base.askRate = daysLeft >= 1 ? (Math.round(gap / daysLeft * 100) / 100) + "L/day"
+                       : (gap > 0 ? (Math.round(gap * 100) / 100) + "L overdue" : "target met");
+        }
+      }
+    }
+    // Stop check-out leakage: read net movement from the Movement tab
+    // (fed by the "Checkin - Checkout" source). Current rate = sum of
+    // Wellington Net Added; driver = worst single studio by Net Added.
+    // Falls back to Studio Trends Occ Delta if Movement is empty.
+    if(name === "Stop check-out leakage"){
+      const mi = tabIndexByLabel("Movement");
+      const md = state.data[mi];
+      let used = false;
+      if(md && md.headers && md.rows && md.rows.length){
+        const theatreCol = readCol(md,["Theatre"]);
+        const studioCol  = readCol(md,["Studio"]);
+        const netCol     = readCol(md,["Net Added","Net 15d"]);
+        if(netCol != null){
+          const wlgNet = md.rows
+            .filter(r => String(r[theatreCol]).toLowerCase().includes("wellington"))
+            .reduce((a,r)=>a+(toNum(r[netCol])||0),0);
+          let worst = null;
+          md.rows.forEach(r=>{
+            const n = toNum(r[netCol]);
+            if(n == null) return;
+            if(worst == null || n < worst.net) worst = {name:String(r[studioCol]).replace(/^Nia Nest\s*/i,"").trim(), net:n};
+          });
+          base.currentRate = inr(wlgNet) + " net WLG";
+          if(worst){
+            base.driver   = worst.name + ": " + inr(worst.net);
+            base.gapLabel = inr(Math.abs(worst.net)) + " net at " + worst.name;
+          }
+          base.askRate = "0+ net movement";
+          base.done = wlgNet >= 0 ? 100 : 0;
+          base.left = 100 - base.done;
+          used = true;
+        }
+      }
+      if(!used){
+        // Fallback: Studio Trends Occ Delta (occupied - contracted).
+        const ti = tabIndexByLabel("Studio Trends");
+        const td = state.data[ti];
+        if(td && td.headers && td.rows && td.rows.length){
+          const theatreCol = readCol(td,["Theatre"]);
+          const studioCol  = readCol(td,["Studio"]);
+          const deltaCol   = readCol(td,["Occ Delta"]);
+          if(deltaCol != null){
+            const wlgNet = td.rows
+              .filter(r => String(r[theatreCol]).toLowerCase().includes("wellington"))
+              .reduce((a,r)=>a+(toNum(r[deltaCol])||0),0);
+            let worst = null;
+            td.rows.forEach(r=>{
+              const dd = toNum(r[deltaCol]);
+              if(dd == null) return;
+              if(worst == null || dd < worst.delta) worst = {name:String(r[studioCol]).replace(/^Nia Nest\s*/i,"").trim(), delta:dd};
+            });
+            base.currentRate = inr(wlgNet) + " net WLG";
+            if(worst){
+              base.driver   = worst.name + ": " + inr(worst.delta);
+              base.gapLabel = inr(Math.abs(worst.delta)) + " net at " + worst.name;
+            }
+            base.askRate = "0+ net movement";
+            base.done = wlgNet >= 0 ? 100 : 0;
+            base.left = 100 - base.done;
+          }
+        }
+      }
+    }
+  } catch(e){ /* fall back to static base */ }
+  return base;
+}
+
 const PRIORITY_PROGRESS = {
   "Convert FONO funnel": {
     done: 26,
     left: 74,
     currentRate: "910 live nests",
-    askRate: "216 nests/day",
-    driver: "Visited: 3,947 nests",
+    askRate: "324 nests/day",
+    driver: "Visited: 3,363 nests",
     unit: "Action"
   },
   "Fix Wellington occupancy drag": {
-    done: 72,
-    left: 28,
-    currentRate: "72.2% occupancy",
-    askRate: "24 nests/day",
-    driver: "282 nests short",
+    done: 73,
+    left: 27,
+    currentRate: "73.0% occupancy",
+    askRate: "42 nests/day",
+    driver: "334 nests short",
+    gapLabel: "334 nests",
     unit: "Action"
   },
   "Close B2B conversion": {
-    done: 13,
-    left: 87,
-    currentRate: "0.014L/day",
-    askRate: "0.15L/day",
-    driver: "1.74L CM gap",
+    done: 69,
+    left: 31,
+    currentRate: "1.57L realised",
+    askRate: "0.09L/day",
+    driver: "0.71L CM gap",
+    gapLabel: "0.71L gap",
     unit: "Action"
   },
   "Recover collections": {
@@ -2588,9 +2757,10 @@ const PRIORITY_PROGRESS = {
   "Stop check-out leakage": {
     done: 0,
     left: 100,
-    currentRate: "-64 net WLG",
+    currentRate: "-89 net WLG",
     askRate: "0+ net movement",
     driver: "Munirappa: -80",
+    gapLabel: "80 net at Munirappa",
     unit: "Action"
   },
   "Monetise member wallet": {
@@ -2604,11 +2774,11 @@ const PRIORITY_PROGRESS = {
 };
 
 function progressPriorityCard(r){
-  const p=PRIORITY_PROGRESS[r[0]] || {done:0,left:100,currentRate:"–",askRate:"–",driver:"–",unit:"Progress"};
+  const p={done:0,left:100,currentRate:"–",askRate:"–",driver:"–",unit:"Progress", ...livePriority(r[0])};
   const done=clamp(p.done);
   const left=clamp(100-done);
   const risk=r[5];
-  const gap=r[4];
+  const gap=p.gapLabel != null ? p.gapLabel : r[4];
   return `<button class="text-left bg-white border border-nia-hair rounded-lg p-5 shadow-subtle hover:border-nia-blue/50 transition-colors min-w-0" data-priority="${esc(r[0])}">
     <div class="flex items-start justify-between gap-3 mb-4">
       <div class="min-w-0">
@@ -2669,13 +2839,13 @@ function renderCockpit(){
   if(tab==="Priorities"){
     const critical=rows.filter(r=>String(r[5]).toLowerCase().includes("critical")).length;
     const progressRows=rows.map(r=>{
-      const p=PRIORITY_PROGRESS[r[0]] || {done:0,left:100,currentRate:"–",askRate:"–",driver:"–"};
+      const p=livePriority(r[0]) || {done:0,left:100,currentRate:"–",askRate:"–",driver:"–"};
       return {label:r[0], value:`${clamp(100-(p.done||0))}% left`, width:clamp(p.done||0), alert:String(r[5]).includes("Critical")};
     });
     host.innerHTML =
       cockpitCard("Progress To Goal", `${critical} critical`, barRows(progressRows, "blue"), "siren") +
-      cockpitCard("Rate Gap", "Ask > Current", `<div class="space-y-3">${rows.map(r=>{const p=PRIORITY_PROGRESS[r[0]]||{}; return `<div class="grid grid-cols-[1fr_auto] gap-3 text-xs"><span class="font-medium text-nia-body truncate">${esc(r[0])}</span><span class="font-bold text-nia-ink">${esc(p.askRate||"–")}</span><span class="text-nia-mute">Current</span><span class="text-nia-mute">${esc(p.currentRate||"–")}</span></div>`}).join("")}</div>`, "activity") +
-      cockpitCard("Biggest Drivers", "Variables", `<div class="space-y-2">${rows.map(r=>{const p=PRIORITY_PROGRESS[r[0]]||{}; return `<div class="text-sm leading-snug"><span class="font-semibold text-nia-ink">${esc(r[0])}:</span> <span class="text-nia-mute">${esc(p.driver||"–")}</span></div>`}).join("")}</div>`, "sliders-horizontal");
+      cockpitCard("Rate Gap", "Ask > Current", `<div class="space-y-3">${rows.map(r=>{const p=livePriority(r[0])||{}; return `<div class="grid grid-cols-[1fr_auto] gap-3 text-xs"><span class="font-medium text-nia-body truncate">${esc(r[0])}</span><span class="font-bold text-nia-ink">${esc(p.askRate||"–")}</span><span class="text-nia-mute">Current</span><span class="text-nia-mute">${esc(p.currentRate||"–")}</span></div>`}).join("")}</div>`, "activity") +
+      cockpitCard("Biggest Drivers", "Variables", `<div class="space-y-2">${rows.map(r=>{const p=livePriority(r[0])||{}; return `<div class="text-sm leading-snug"><span class="font-semibold text-nia-ink">${esc(r[0])}:</span> <span class="text-nia-mute">${esc(p.driver||"–")}</span></div>`}).join("")}</div>`, "sliders-horizontal");
     return;
   }
 
@@ -2867,14 +3037,14 @@ function renderCockpit(){
   if(tab==="Movement"){
     const studio=readCol(d,["Studio"]);
     const theatre=readCol(d,["Theatre"]);
-    const ci=readCol(d,["Check-ins 15d"]);
-    const co=readCol(d,["Check-outs 15d"]);
-    const net=readCol(d,["Net 15d"]);
+    const ci=readCol(d,["Check-ins (Month)","Check-ins 15d"]);
+    const co=readCol(d,["Check-outs (Month)","Check-outs 15d"]);
+    const net=readCol(d,["Net Added","Net 15d"]);
     const totalNet=rows.reduce((a,r)=>a+(toNum(r[net])||0),0);
     const worst=rows.slice().sort((a,b)=>(toNum(a[net])||0)-(toNum(b[net])||0))[0];
     host.innerHTML =
-      cockpitCard("15d Net Movement", inr(totalNet), barRows(rows.slice(0,6).map(r=>({label:r[studio],value:inr(toNum(r[net])||0),width:clamp(Math.abs(toNum(r[net])||0)/80*100),alert:(toNum(r[net])||0)<0})), "red"), "door-open") +
-      cockpitCard("Largest Leak", esc(worst?.[studio] || "–"), `<div class="text-sm text-nia-mute leading-relaxed">${esc(worst?.[theatre] || "")} · ${esc(worst?.[ci] || "0")} check-ins / ${esc(worst?.[co] || "0")} check-outs. This studio is losing the most bodies, not just revenue.</div>`, "log-out") +
+      cockpitCard("Net Movement (Month)", inr(totalNet), barRows(rows.slice(0,6).map(r=>({label:r[studio],value:inr(toNum(r[net])||0),width:clamp(Math.abs(toNum(r[net])||0)/80*100),alert:(toNum(r[net])||0)<0})), "red"), "door-open") +
+      cockpitCard("Largest Leak", esc(worst?.[studio] || "–"), `<div class="text-sm text-nia-mute leading-relaxed">${esc(worst?.[theatre] || "")} · ${esc(worst?.[ci] || "0")} check-ins / ${esc(worst?.[co] || "0")} check-outs this month. This studio is losing the most bodies, not just revenue.</div>`, "log-out") +
       cockpitCard("Behavior Rule", "Retention before refill", `<div class="text-sm text-nia-mute leading-relaxed">If net movement is negative, first diagnose why people are leaving, then refill. Otherwise demand creation leaks out the back door.</div>`, "shield-alert");
     return;
   }
@@ -3004,7 +3174,7 @@ function updateDetailNote(count){
     "FONO": "FONO funnel from the base data. Visited is not progress unless it converts to contracting or live nests.",
     "FONO Ease": "Ease scores come from the FONO easiest-900 model artifact. The selected set is 909 potential nests and about 714 expected nests.",
     "Collections": "Collection score uses Studio_Summary dues plus last-15-day member-fee pace from reconciliation. Name mismatches are a data-quality drag to fix.",
-    "Movement": "Last-15-day check-in/check-out view. Negative net movement means demand generation is leaking before it can help occupancy.",
+    "Movement": "Month-to-date check-in/check-out view from the Checkin - Checkout tracker. Negative net movement means demand generation is leaking before it can help occupancy.",
     "Studio Trends": "Last-15-day studio economics from Daily Studio Log. Low trend score should force fill, collect, renegotiate, or exit action.",
     "Essentials": "Wallet attach from the Essentials tracker. The target implied by ₹2.5L on ₹64.2L revenue is roughly 3.9%.",
     "Essentials Pilot": "30-day Essentials pilot tracker. Days marked Actual have real data entered; Planned days show the model. Key signals: penetration %, delivery success %, contribution turning positive."
