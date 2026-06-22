@@ -3054,7 +3054,10 @@ function renderCockpit(){
     host.innerHTML =
       cockpitCard("Active Occupancy", fmt(totalContracted ? totalOccupied/totalContracted*100 : 0,"pct"), barRows(rows.map(r=>({label:r[theatre], value:`${fmt(toNum(r[pct]),"pct")}`, width:toNum(r[pct])||0, alert:(toNum(r[pct])||0)<90}))), "building-2") +
       cockpitCard("CM Variance", `${inr(rows.reduce((a,r)=>a+(toNum(r[variance])||0),0))}L`, barRows(rows.map(r=>({label:r[theatre], value:`${inr(toNum(r[variance])||0)}L`, width:clamp(Math.abs(toNum(r[variance])||0)/(Math.max(...rows.map(x=>Math.abs(toNum(x[variance])||0)),1))*100), alert:(toNum(r[variance])||0)<0})), "red"), "line-chart") +
-      cockpitCard("Focus Theatre", esc(worst?.[theatre] || "–"), `<div class="text-sm text-nia-mute leading-relaxed">Wellington carries the largest active-theatre variance and lowest occupancy. Daily behavior: fill active beds before opening more supply.</div>`, "radar");
+      cockpitCard("Focus Theatre", esc(worst?.[theatre] || "–"), `<div class="text-sm text-nia-mute leading-relaxed">
+${focus.theatre} carries the largest active-theatre variance and lowest occupancy.
+Daily behavior: ${focus.behavior}
+</div>` "radar");
     return;
   }
 
