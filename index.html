@@ -2976,7 +2976,7 @@ function renderTable(){
     const n = toNum(v);
     return (n != null && n !== 0) || (n == null && String(v ?? "").trim() !== "");
   })
-);
+).filter(r => !r.some(v => String(v ?? "").toLowerCase().includes("oragadam")));
 
   const numCols=d.headers.map((_,ci)=>d.rows.length && d.rows.filter(r=>toNum(r[ci])!=null).length>d.rows.length*0.6);
   const hint=document.getElementById("detailHint");
