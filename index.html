@@ -2144,27 +2144,77 @@ function gvizUrl(tab){
   return `https://docs.google.com/spreadsheets/d/${CONFIG.sheetId}/gviz/tq?tqx=out:csv&gid=${tab.gid}`;
 }
 
-function parseCSV(text){
-  const rows=[]; let row=[], field="", q=false;
+function parseCSV(text, tabName=""){
+  const rows=[]; 
+  let row=[], field="", q=false;
+
   for(let i=0;i<text.length;i++){
     const c=text[i];
+
     if(q){
-      if(c==='"'){ if(text[i+1]==='"'){field+='"';i++;} else q=false; }
-      else field+=c;
-    } else {
-      if(c==='"') q=true;
-      else if(c===','){ row.push(field); field=""; }
-      else if(c==='\n'){ row.push(field); rows.push(row); row=[]; field=""; }
-      else if(c==='\r'){ /* skip */ }
-      else field+=c;
+      if(c==='"'){
+        if(text[i+1]==='"'){
+          field+='"';
+          i++;
+        }else{
+          q=false;
+        }
+      }else{
+        field+=c;
+      }
+    }else{
+      if(c==='"'){
+        q=true;
+      }else if(c===','){
+        row.push(field);
+        field="";
+      }else if(c==='\n'){
+        row.push(field);
+        rows.push(row);
+        row=[];
+        field="";
+      }else if(c==='\r'){
+        // Skip
+      }else{
+        field+=c;
+      }
     }
   }
-  if(field.length||row.length){ row.push(field); rows.push(row); }
-  const cleaned=rows.filter(r=>r.some(c=>String(c).trim()!==""));
-  if(!cleaned.length) return {headers:[],rows:[]};
-  return { headers: cleaned[0].map(h=>h.trim()), rows: cleaned.slice(1) };
-}
 
+  if(field.length || row.length){
+    row.push(field);
+    rows.push(row);
+  }
+
+  const cleaned = rows.filter(r => r.some(c => String(c).trim() !== ""));
+
+  if(!cleaned.length){
+    return { headers:[], rows:[] };
+  }
+
+  // Priorities sheet has no header row
+  if(tabName === "Priorities"){
+    return {
+      headers: [
+        "Priority",
+        "Progress",
+        "Current",
+        "Target",
+        "Gap",
+        "Risk",
+        "Insight",
+        "Behavior to drive"
+      ],
+      rows: cleaned
+    };
+  }
+
+  // All other sheets
+  return {
+    headers: cleaned[0].map(h => h.trim()),
+    rows: cleaned.slice(1)
+  };
+}
 async function loadTab(idx){
   const tab=CONFIG.tabs[idx];
   console.log("Loading:", idx, tab.label);
@@ -2192,7 +2242,7 @@ return;
       // Google returns an HTML login/error page (not CSV) when the sheet
       // is not shared "anyone with link". Detect that explicitly.
       if(/^\s*<(!doctype|html)/i.test(txt)) throw new Error("not public (got HTML, check sheet sharing)");
-      const parsed=parseCSV(txt);
+      const parsed = parseCSV(txt, tab.label);
       if (tab.label === "Priorities") {
     console.table(parsed.rows);
 }
