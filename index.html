@@ -2961,10 +2961,24 @@ function renderCockpit(){
 
   if(tab==="Priorities"){
     const critical=rows.filter(r=>String(r[5]).toLowerCase().includes("critical")).length;
-    const progressRows=rows.map(r=>{
-      const p=livePriority(r[0]) || {done:0,left:100,currentRate:"–",askRate:"–",driver:"–"};
-      return {label:r[0], value:`${clamp(100-(p.done||0))}% left`, width:clamp(p.done||0), alert:String(r[5]).includes("Critical")};
-    });
+    const progressRows = rows.map(r => {
+  const p = livePriority(r[0]) || {
+    done: 0,
+    left: 100,
+    currentRate: "–",
+    askRate: "–",
+    driver: "–"
+  };
+
+  console.log("Priority:", r[0], "Done:", p.done, "Left:", p.left);
+
+  return {
+    label: r[0],
+    value: `${p.left}% left`,
+    width: p.done,
+    alert: String(r[5]).includes("Critical")
+  };
+});
     host.innerHTML =
       cockpitCard("Progress To Goal", `${critical} critical`, barRows(progressRows, "blue"), "siren") +
       cockpitCard("Rate Gap", "Ask > Current", `<div class="space-y-3">${rows.map(r=>{const p=livePriority(r[0])||{}; return `<div class="grid grid-cols-[1fr_auto] gap-3 text-xs"><span class="font-medium text-nia-body truncate">${esc(r[0])}</span><span class="font-bold text-nia-ink">${esc(p.askRate||"–")}</span><span class="text-nia-mute">Current</span><span class="text-nia-mute">${esc(p.currentRate||"–")}</span></div>`}).join("")}</div>`, "activity") +
