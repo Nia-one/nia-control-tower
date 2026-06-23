@@ -2673,8 +2673,9 @@ function livePriority(name){
     // FONO funnel: sum Visited / live nests straight from the FONO tab.
     // Live sheet is one row PER CORRIDOR with columns Visited, Onboarded (Live),
     // so we aggregate down the columns (matches the FONO cockpit logic).
-    if(name === "Convert FONO funnel"){
-      const fi = tabIndexByLabel("FONO");
+      if(name.includes("Convert FONO funnel")){
+console.log("FONO priority matched:", name);
+        const fi = tabIndexByLabel("FONO");
       const fd = state.data[fi];
       if(fd && fd.headers && fd.rows && fd.rows.length){
         const visitedCol = readCol(fd,["Visited"]);
