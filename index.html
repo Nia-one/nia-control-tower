@@ -2747,6 +2747,48 @@ if(name === "Monetise member wallet"){
     }
   }
 }
+    // Work
+if(name === "Work"){
+  const ci = tabIndexByLabel("CM Actions");
+  const cd = state.data[ci];
+
+  if(cd && cd.headers && cd.rows && cd.rows.length){
+
+    const driverCol   = readCol(cd,["Driver"]);
+    const planCol     = readCol(cd,["Plan (₹L)"]);
+    const realizedCol = readCol(cd,["Realized (₹L)"]);
+    const gapCol      = readCol(cd,["Gap (₹L)"]);
+
+    const row = cd.rows.find(r =>
+      String(r[driverCol]).toLowerCase().includes("work")
+    );
+
+    if(row){
+
+      const plan = toNum(row[planCol]) || 0;
+      const realized = toNum(row[realizedCol]) || 0;
+      const gap = gapCol != null
+        ? (toNum(row[gapCol]) || Math.max(plan-realized,0))
+        : Math.max(plan-realized,0);
+
+      base.done = clamp(Math.round(realized/plan*100));
+      base.left = 100-base.done;
+
+      base.currentRate = realized + "L realised";
+      base.driver = gap + "L gap";
+      base.gapLabel = gap + "L gap";
+
+      const today = new Date();
+      const target = new Date(today.getFullYear(),5,30);
+      const daysLeft = Math.ceil((target-new Date(today.getFullYear(),today.getMonth(),today.getDate()))/86400000);
+
+      base.askRate =
+        daysLeft>0
+          ? (Math.round(gap/daysLeft*100)/100)+"L/day"
+          : (gap>0 ? gap+"L overdue" : "Target met");
+    }
+  }
+}
     // Stop check-out leakage: read net movement from the Movement tab
     // (fed by the "Checkin - Checkout" source). Current rate = sum of
     // Wellington Net Added; driver = worst single studio by Net Added.
