@@ -2181,6 +2181,7 @@ state.data[tab.label] = state.data[idx];
 
 return;
   }
+  
   const attempts=3;
   let lastErr=null;
   for(let a=0;a<attempts;a++){
@@ -2201,7 +2202,8 @@ console.table(parsed.rows);
   status: "live"
 };
 
-state.data[tab.label] = state.data[idx];      return;
+state.data[tab.label] = state.data[idx];      
+      return;
     }catch(e){
 
   console.error("FAILED TAB:", tab.label);
@@ -2224,10 +2226,11 @@ state.data[idx] = {
   status: "error"
 };
 
-state.data[tab.label] = state.data[idx];
-  
+state.data[tab.label] = state.data[idx];  
 }
-async function loadAll(){
+  return;
+}
+  async function loadAll(){
   setStatus("loading","Refreshing…");
   const btn = document.getElementById('refreshBtn');
   btn.classList.add('opacity-70', 'cursor-not-allowed');
@@ -2240,18 +2243,6 @@ async function loadAll(){
   refreshIcons();
 }
 
-async function loadAll(){
-  setStatus("loading","Refreshing…");
-  const btn = document.getElementById('refreshBtn');
-  btn.classList.add('opacity-70', 'cursor-not-allowed');
-  
-  await Promise.all(CONFIG.tabs.map((_,i)=>loadTab(i)));
-  resetCountdown();
-  render();
-  
-  btn.classList.remove('opacity-70', 'cursor-not-allowed');
-  refreshIcons();
-}
 
 /* ---- aggregation ---- */
 function colIndex(headers,name){ return headers.findIndex(h=>h.toLowerCase()===String(name).toLowerCase()); }
