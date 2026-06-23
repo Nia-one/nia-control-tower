@@ -2827,68 +2827,43 @@ console.log(sd.headers);
     // Monetise member wallet: read Essentials row from CM Actions.
 // Source of truth = CM Actions driver "Essentials".
 if(name === "Monetise member wallet"){
-  const ci = tabIndexByLabel("CM Actions");
-  const cd = state.data[ci];
 
-  if(cd && cd.headers && cd.rows && cd.rows.length){
+  const di = tabIndexByLabel("DOR");
+  const dd = state.data[di];
 
-    const driverCol   = readCol(cd,["Driver"]);
-    const planCol     = readCol(cd,["Plan (₹L)"]);
-    const realizedCol = readCol(cd,["Realized (₹L)"]);
-    const gapCol      = readCol(cd,["Gap (₹L)"]);
+  if(dd && dd.headers && dd.rows && dd.rows.length){
 
-    const row = cd.rows.find(r =>
-      String(r[driverCol]).toLowerCase().includes("essentials")
+    const metricCol  = readCol(dd,["Metric"]);
+    const currentCol = readCol(dd,["Current"]);
+    const targetCol  = readCol(dd,["Target"]);
+    const gapCol     = readCol(dd,["Gap"]);
+    const trendCol   = readCol(dd,["Trend"]);
+
+    const row = dd.rows.find(r =>
+      String(r[metricCol]).toLowerCase() === "member wallet"
     );
 
     if(row){
 
-      const plan = toNum(row[planCol]) || 0;
-      const realized = toNum(row[realizedCol]) || 0;
-
-      const gap =
-        gapCol != null && row[gapCol] !== ""
-          ? (toNum(row[gapCol]) || 0)
-          : Math.max(plan - realized,0);
-
-      const pct = plan
-        ? Math.round(realized / plan * 100)
-        : 0;
-
-      base.currentRate =
-        (Math.round(realized * 100) / 100) + "L realised";
+      base.currentRate = row[currentCol];
 
       base.driver =
-        (Math.round(gap * 100) / 100) + "L CM gap";
+        (toNum(row[gapCol]) || 0).toFixed(2) + "L CM gap";
 
       base.gapLabel =
-        (Math.round(gap * 100) / 100) + "L gap";
+        (toNum(row[gapCol]) || 0).toFixed(2) + "L gap";
 
-      base.done = clamp(pct);
+      base.done =
+        parseFloat(String(row[11]).replace("%","")) || 0;
+
       base.left = 100 - base.done;
 
-      const today = new Date();
-      const target = new Date(today.getFullYear(),5,30);
-
-      const daysLeft = Math.ceil(
-        (target -
-          new Date(
-            today.getFullYear(),
-            today.getMonth(),
-            today.getDate()
-          )) / 86400000
-      );
-
       base.askRate =
-        daysLeft >= 1
-          ? (Math.round((gap / daysLeft) * 100) / 100) + "L/day"
-          : gap > 0
-              ? (Math.round(gap * 100) / 100) + "L overdue"
-              : "target met";
+        String(row[12]).split("|")[1].trim();
+
     }
   }
-}
-    // Work
+}    // Work
 if(name === "Work"){
   const ci = tabIndexByLabel("CM Actions");
   const cd = state.data[ci];
