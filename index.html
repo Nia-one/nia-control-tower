@@ -2191,6 +2191,8 @@ return;
       // is not shared "anyone with link". Detect that explicitly.
       if(/^\s*<(!doctype|html)/i.test(txt)) throw new Error("not public (got HTML, check sheet sharing)");
       const parsed=parseCSV(txt);
+      console.log("TAB:", tab.label);
+console.table(parsed.rows);
       if(!parsed.headers.length) throw new Error("empty");
      state.data[idx] = {
   ...parsed,
