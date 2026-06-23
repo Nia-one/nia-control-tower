@@ -1917,7 +1917,7 @@ const CONFIG = {
     { tab:"CM Actions", label:"CM plan achieved", agg:"ratio", num:"Realized (₹L)", den:"Plan (₹L)", fmt:"pct", target:100, trend:"up" },
     { tab:"CM Actions", label:"CM gap remaining (₹L)", agg:"sum", col:"Gap (₹L)", fmt:"num", alertIfAbove:0, trend:"down" },
     { tab:"Studios", label:"Active occupancy", agg:"ratio", num:"Occupied", den:"Contracted", fmt:"pct", target:95, trend:"up" },
-    { tab:"Studios", label:"CM variance (₹L)", agg:"sum", col:"Variance (₹L)", fmt:"num", alertIfBelow:0, trend:"up" },
+    
     { tab:"FONO", label:"FONO potential nests", agg:"sum", col:"Visited", fmt:"num", trend:"up" },
     { tab:"FONO", label:"FONO Onboarded (Live)", agg:"sum", col:"Onboarded (Live)", fmt:"num", target:3500, trend:"up" },
     { tab:"Enterprise", label:"B2B achievement", agg:"ratio", num:"Realized (₹L)", den:"Target (₹L)", fmt:"pct", target:100, trend:"up" },
@@ -2458,6 +2458,7 @@ console.table(rows);
           ${metricIdx.map(i=>`<div class="bg-nia-wash rounded-md p-3 min-w-0">
             <div class="text-[11px] text-nia-mute font-semibold mb-1 break-words">${esc(headers[i])}</div>
             <div class="text-sm ${numCols[i] ? "tabular-nums font-bold text-nia-ink" : "font-semibold text-nia-body"} break-words">${String(r[i])}</div>
+            
           </div>`).join("")}
         </div>
         ${longIdx.map(i=>`<div class="mb-3 min-w-0">
@@ -3328,7 +3329,7 @@ function renderCockpit(){
     const worst=rows.slice().sort((a,b)=>(toNum(a[variance])||0)-(toNum(b[variance])||0))[0];
     host.innerHTML =
       cockpitCard("Active Occupancy", fmt(totalContracted ? totalOccupied/totalContracted*100 : 0,"pct"), barRows(rows.map(r=>({label:r[theatre], value:`${fmt(toNum(r[pct]),"pct")}`, width:toNum(r[pct])||0, alert:(toNum(r[pct])||0)<90}))), "building-2") +
-      cockpitCard("CM Variance", `${inr(rows.reduce((a,r)=>a+(toNum(r[variance])||0),0))}L`, barRows(rows.map(r=>({label:r[theatre], value:`${inr(toNum(r[variance])||0)}L`, width:clamp(Math.abs(toNum(r[variance])||0)/(Math.max(...rows.map(x=>Math.abs(toNum(x[variance])||0)),1))*100), alert:(toNum(r[variance])||0)<0})), "red"), "line-chart") +
+      
 cockpitCard(
   "Focus Theatre",
   esc(worst?.[theatre] || "--"),
