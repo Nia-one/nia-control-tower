@@ -2854,12 +2854,22 @@ if(name === "Monetise member wallet"){
         (toNum(row[gapCol]) || 0).toFixed(2) + "L gap";
 
    
-        const doneText = String(row[11]);
+        // Current = Current Attach
+const current = toNum(row[currentCol]) || 0;
 
-Logger.log("Member Wallet Done = " + doneText);
+// Target = Studio Revenue
+const target = toNum(row[targetCol]) || 0;
 
-base.done =
-    parseFloat(doneText.replace("%","")) || 0;
+// Driver = 10% of Studio Revenue (already stored in Gap)
+const driver = toNum(row[gapCol]) || 0;
+
+// % Done = Current ÷ Driver × 100
+base.done = driver > 0
+  ? Math.round((current / driver) * 100)
+  : 0;
+
+// Keep it within 0–100
+base.done = Math.max(0, Math.min(100, base.done));
 
 base.left = 100 - base.done;
 
