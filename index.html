@@ -2854,7 +2854,14 @@ if(name === "Monetise member wallet"){
         (toNum(row[gapCol]) || 0).toFixed(2) + "L gap";
 
       base.done =
-        parseFloat(String(row[11]).replace("%","")) || 0;
+        const doneText = String(row[11]);
+
+Logger.log("Member Wallet Done = " + doneText);
+
+base.done =
+    parseFloat(doneText.replace("%","")) || 0;
+
+base.left = 100 - base.done;
 
       base.left = 100 - base.done;
 
