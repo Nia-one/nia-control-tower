@@ -2421,21 +2421,8 @@ rows = rows.map(r => keep.map(x => r[x.i]));
   const metricIdx=headers.map((h,i)=>i).filter(i=>i!==titleIdx && i!==badgeIdx && !longIdx.includes(i)).slice(0,6);
   const restIdx=headers.map((h,i)=>i).filter(i=>i!==titleIdx && i!==badgeIdx && !metricIdx.includes(i) && !longIdx.includes(i));
 
-  console.log(headers);
-rows.forEach(r => {
-  if (
-    String(r[0]).includes("EBITDA") ||
-    String(r[0]).includes("Wellington") ||
-    String(r[0]).includes("B2B") ||
-    String(r[0]).includes("Collections") ||
-    String(r[0]).includes("Essentials")
-  ) {
-    console.log(JSON.stringify(r));
-  }
-});
-console.log(rows[1]);
-console.log(rows[2]);
-console.log(rows[3]);
+ console.log("TAB:", CONFIG.tabs[state.active].label);
+console.table(rows);
   
   return `<div class="divide-y divide-nia-hair/70 bg-white">
     ${rows.map(r=>`
