@@ -2858,9 +2858,8 @@ const askCol    = readCol(dd,["Ask Rate"]);
         (toNum(row[gapCol]) || 0).toFixed(2) + "L gap";
 
    
-        base.done = toNum(row[doneCol]) || 0;
-
-base.left = toNum(row[leftCol]) || 0;
+        base.done = Math.round(toNum(row[doneCol]) || 0);
+base.left = Math.round(toNum(row[leftCol]) || 0);
 
 base.askRate = String(row[askCol]);
 
