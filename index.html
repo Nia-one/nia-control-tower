@@ -3044,9 +3044,17 @@ function progressPriorityCard(r){
 
 function renderBehaviorBoard(){
   const host=document.getElementById("behaviorBoard");
-  const priorities = (state.data["Priorities"] && state.data["Priorities"].rows)
-  ? state.data["Priorities"].rows
-  : SAMPLE["Priorities"].rows;
+  console.log("STATE DATA:", state.data);
+console.log("STATE PRIORITIES:", state.data["Priorities"]);
+console.log("SAMPLE PRIORITIES:", SAMPLE["Priorities"]);
+
+const priorities =
+  (state.data["Priorities"] && state.data["Priorities"].rows)
+    ? state.data["Priorities"].rows
+    : SAMPLE["Priorities"].rows;
+
+console.log("Using priorities:", priorities);
+console.log("Priority Count:", priorities.length);
   const critical=priorities.filter(r=>String(r[5]).toLowerCase().includes("critical")).length;
   console.log("Priority Count:", priorities.length);
 console.log(priorities);
