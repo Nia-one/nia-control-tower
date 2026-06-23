@@ -2385,7 +2385,36 @@ function formattedCell(header, value, isNumeric=false){
   return esc(val);
 }
 function renderRecordCards(data, rows, numCols){
-  const headers=data.headers;
+  const originalHeaders = data.headers;
+  const HIDDEN_FIELDS = [
+  "WK",
+  "WK-1",
+  "WK-2",
+  "WK-3",
+  "WK-4",
+  "WK1",
+  "WK2",
+  "WK3",
+  "WK4",
+  "Trend",
+  "Last synced"
+];
+
+const keep = originalHeaders
+  .map((h, i) => ({ h: String(h).trim(), i }))
+  .filter(x => {
+  const h = x.h.toLowerCase().replace(":", "").trim();
+
+  return !(
+    h.startsWith("wk") ||
+    h.startsWith("week") ||
+    h.includes("trend")
+  );
+});
+
+const headers = keep.map(x => originalHeaders[x.i]);
+rows = rows.map(r => keep.map(x => r[x.i]));
+  numCols = keep.map(x => numCols[x.i]);
   const badgeIdx=headers.findIndex(h=>["risk","status","severity","stage"].includes(String(h).toLowerCase()));
   const titleIdx=0;
   const longIdx=headers.map((h,i)=>isLongTextHeader(h) ? i : -1).filter(i=>i>=0);
