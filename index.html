@@ -2168,9 +2168,17 @@ function parseCSV(text){
 async function loadTab(idx){
   const tab=CONFIG.tabs[idx];
   if(usingSample){
-    const s=SAMPLE[tab.label]||{headers:[],rows:[]};
-    state.data[idx]={...s, fetchedAt:new Date(), status:"sample"};
-    return;
+    const s = SAMPLE[tab.label] || { headers: [], rows: [] };
+
+state.data[idx] = {
+  ...s,
+  fetchedAt: new Date(),
+  status: "sample"
+};
+
+state.data[tab.label] = state.data[idx];
+
+return;
   }
   const attempts=3;
   let lastErr=null;
@@ -2184,8 +2192,13 @@ async function loadTab(idx){
       if(/^\s*<(!doctype|html)/i.test(txt)) throw new Error("not public (got HTML, check sheet sharing)");
       const parsed=parseCSV(txt);
       if(!parsed.headers.length) throw new Error("empty");
-      state.data[idx]={...parsed, fetchedAt:new Date(), status:"live"};
-      return;
+     state.data[idx] = {
+  ...parsed,
+  fetchedAt: new Date(),
+  status: "live"
+};
+
+state.data[tab.label] = state.data[idx];      return;
     }catch(e){
       lastErr=e;
       if(a<attempts-1) await new Promise(r=>setTimeout(r, 600*(a+1))); // backoff
@@ -2193,10 +2206,17 @@ async function loadTab(idx){
   }
   // All retries failed. Keep sample rows for layout, but mark status "error"
   // so the UI shows "data unavailable", never the sample number as if live.
-  const s=SAMPLE[tab.label]||{headers:[],rows:[]};
-  state.data[idx]={...s, fetchedAt:new Date(), status:"error", error:String(lastErr&&lastErr.message||lastErr)};
-}
+  const s = SAMPLE[tab.label] || { headers: [], rows: [] };
 
+state.data[idx] = {
+  ...s,
+  fetchedAt: new Date(),
+  status: "error"
+};
+
+state.data[tab.label] = state.data[idx];
+  
+}
 async function loadAll(){
   setStatus("loading","Refreshing…");
   const btn = document.getElementById('refreshBtn');
@@ -3059,7 +3079,10 @@ console.log("Priority Count:", priorities.length);
   console.log("Priority Count:", priorities.length);
 console.log(priorities);
 
-const cards = priorities.map(progressPriorityCard).join("");
+const cards = priorities.map((r, i) => {
+  console.log("Rendering Card:", i, r[0]);
+  return progressPriorityCard(r);
+}).join("");
   host.innerHTML=`<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-5">
     <div>
       <h2 class="text-[11px] font-semibold uppercase tracking-widest text-nia-mute mb-1">Behavior War Room</h2>
