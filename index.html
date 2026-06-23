@@ -2938,7 +2938,9 @@ function progressPriorityCard(r){
 
 function renderBehaviorBoard(){
   const host=document.getElementById("behaviorBoard");
-  const priorities=SAMPLE["Priorities"].rows;
+  const priorities = (state.data["Priorities"] && state.data["Priorities"].rows)
+  ? state.data["Priorities"].rows
+  : SAMPLE["Priorities"].rows;
   const critical=priorities.filter(r=>String(r[5]).toLowerCase().includes("critical")).length;
   const cards=priorities.map(progressPriorityCard).join("");
 
