@@ -2203,10 +2203,17 @@ console.table(parsed.rows);
 
 state.data[tab.label] = state.data[idx];      return;
     }catch(e){
-      lastErr=e;
-      if(a<attempts-1) await new Promise(r=>setTimeout(r, 600*(a+1))); // backoff
-    }
+
+  console.error("FAILED TAB:", tab.label);
+  console.error(e);
+
+  lastErr = e;
+
+  if(a < attempts-1){
+    await new Promise(r => setTimeout(r,600*(a+1)));
   }
+
+}
   // All retries failed. Keep sample rows for layout, but mark status "error"
   // so the UI shows "data unavailable", never the sample number as if live.
   const s = SAMPLE[tab.label] || { headers: [], rows: [] };
