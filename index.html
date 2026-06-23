@@ -3079,10 +3079,10 @@ console.log("Priority Count:", priorities.length);
   console.log("Priority Count:", priorities.length);
 console.log(priorities);
 
-const cards = priorities.map((r, i) => {
-  console.log("Rendering Card:", i, r[0]);
-  return progressPriorityCard(r);
-}).join("");
+console.log("Priority Names:");
+priorities.forEach((r,i)=>console.log(i, r[0]));
+
+const cards = priorities.map(progressPriorityCard).join("");
   host.innerHTML=`<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-5">
     <div>
       <h2 class="text-[11px] font-semibold uppercase tracking-widest text-nia-mute mb-1">Behavior War Room</h2>
