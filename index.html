@@ -2838,6 +2838,10 @@ if(name === "Monetise member wallet"){
     const targetCol  = readCol(dd,["Target"]);
     const gapCol     = readCol(dd,["Gap"]);
     const trendCol   = readCol(dd,["Trend"]);
+    const attachCol = readCol(dd,["Attach %"]);
+const doneCol   = readCol(dd,["Done %"]);
+const leftCol   = readCol(dd,["Left %"]);
+const askCol    = readCol(dd,["Ask Rate"]);
 
     const row = dd.rows.find(r =>
       String(r[metricCol]).toLowerCase() === "member wallet"
@@ -2854,33 +2858,19 @@ if(name === "Monetise member wallet"){
         (toNum(row[gapCol]) || 0).toFixed(2) + "L gap";
 
    
-        // Current = Current Attach
-const current = toNum(row[currentCol]) || 0;
+        base.done = toNum(row[doneCol]) || 0;
 
-// Target = Studio Revenue
-const target = toNum(row[targetCol]) || 0;
+base.left = toNum(row[leftCol]) || 0;
 
-// Driver = 10% of Studio Revenue (already stored in Gap)
-const driver = toNum(row[gapCol]) || 0;
+base.askRate = String(row[askCol]);
 
-// % Done = Current ÷ Driver × 100
-base.done = driver > 0
-  ? Math.round((current / driver) * 100)
-  : 0;
+base.currentRate = row[currentCol];
 
-// Keep it within 0–100
-base.done = Math.max(0, Math.min(100, base.done));
+base.driver = (toNum(row[gapCol]) || 0).toFixed(2) + "L CM gap";
 
-base.left = 100 - base.done;
-
-      base.left = 100 - base.done;
-
-      base.askRate =
-        String(row[12]).split("|")[1].trim();
-
-    }
-  }
-}    // Work
+base.gapLabel = (toNum(row[gapCol]) || 0).toFixed(2) + "L gap";
+      
+      // Work
 if(name === "Work"){
   const ci = tabIndexByLabel("CM Actions");
   const cd = state.data[ci];
