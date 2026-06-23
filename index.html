@@ -2660,7 +2660,7 @@ function renderSummary(){
 
       actionCard.innerHTML = `
         <div class="flex justify-between items-start mb-1">
-          <div class="text-sm font-bold text-[#7F2F2D]">${k.label} Needs Action</div>
+         <div class="text-sm font-bold text-[#7F2F2D]">${k.label.replace(/^Active\s+/i, '')} Needs Action</div>
           <i data-lucide="arrow-right-circle" class="w-4 h-4 text-nia-clay"></i>
         </div>
         <div class="text-xs text-[#7F2F2D] font-medium mb-2">Currently at ${fmt(val,k.fmt)}</div>
