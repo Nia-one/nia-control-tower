@@ -2415,6 +2415,19 @@ const keep = originalHeaders
 const headers = keep.map(x => originalHeaders[x.i]);
 rows = rows.map(r => keep.map(x => r[x.i]));
   numCols = keep.map(x => numCols[x.i]);
+  console.log("HEADERS:", headers);
+
+rows.forEach(r => {
+  if (
+    String(r[0]).includes("EBITDA") ||
+    String(r[0]).includes("Wellington") ||
+    String(r[0]).includes("B2B") ||
+    String(r[0]).includes("Collections") ||
+    String(r[0]).includes("Essentials")
+  ) {
+    console.log(JSON.stringify(r));
+  }
+});
   const badgeIdx=headers.findIndex(h=>["risk","status","severity","stage"].includes(String(h).toLowerCase()));
   const titleIdx=0;
   const longIdx=headers.map((h,i)=>isLongTextHeader(h) ? i : -1).filter(i=>i>=0);
