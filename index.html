@@ -2836,6 +2836,61 @@ if(name === "Monetise member wallet"){
       }
     }
   } catch(e){ /* fall back to static base */ }
+
+  // Work
+if(name === "Work"){
+
+  const ci = tabIndexByLabel("CM Actions");
+  const cd = state.data[ci];
+
+  if(cd && cd.headers && cd.rows && cd.rows.length){
+
+    const driverCol   = readCol(cd,["Driver"]);
+    const planCol     = readCol(cd,["Plan (₹L)"]);
+    const realizedCol = readCol(cd,["Realized (₹L)"]);
+
+    const row = cd.rows.find(r =>
+      String(r[driverCol]).toLowerCase().includes("work")
+    );
+
+    if(row){
+
+      const plan = toNum(row[planCol]) || 0;
+      const realized = toNum(row[realizedCol]) || 0;
+
+      const done = plan > 0
+        ? Math.round((realized / plan) * 100)
+        : 0;
+
+      const left = 100 - done;
+
+      base.done = clamp(done);
+      base.left = clamp(left);
+
+      // % Done / % Left
+      base.doneLabel = done + "% done";
+      base.bigValue = left + "%";
+      base.bigLabel = "LEFT";
+
+      // Current Rate
+      base.currentRate =
+        realized.toFixed(2) + "L realised";
+
+      // Ask Rate (Target)
+      base.askRate =
+        plan.toFixed(2) + "L target";
+
+      // Driver
+      base.driver = row[driverCol];
+
+      // Gap
+      const gap = Math.max(plan - realized,0);
+
+      base.gapLabel =
+        gap.toFixed(2) + "L gap";
+    }
+  }
+}
   return base;
 }
 
