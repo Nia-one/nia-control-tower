@@ -2497,7 +2497,6 @@ rows.forEach(r => {
     return "";
 }
 console.table(rows);
- 
   
   return `<div class="divide-y divide-nia-hair/70 bg-white">
     ${rows.map(r=>`
@@ -2879,11 +2878,7 @@ function getRiskBadgeClass(text) {
 // Live-data resolver: overrides static PRIORITY_PROGRESS fields with values
 // computed from the loaded tab data so drivers/rates reflect the live sheet.
 function livePriority(name){
-  
   const base = {...(PRIORITY_PROGRESS[name] || {})};
-  if (name === "Close B2B conversion") {
-  console.log("Before Live Update", base);
-}
   try {
     // FONO funnel: sum Visited / live nests straight from the FONO tab.
     // Live sheet is one row PER CORRIDOR with columns Visited, Onboarded (Live),
@@ -2958,7 +2953,6 @@ console.log(sd.headers);
     // Close B2B conversion: pull Plan/Realized/Gap from the CM Actions tab
     // (driver row "B2B 500 new nests"). Source of truth for B2B CM.
     if(name === "Close B2B conversion"){
-      console.log("LIVE B2B RUNNING");
       const ci = tabIndexByLabel("CM Actions");
       const cd = state.data[ci];
       if(cd && cd.headers && cd.rows && cd.rows.length){
@@ -2966,23 +2960,13 @@ console.log(sd.headers);
         const planCol     = readCol(cd,["Plan (₹L)"]);
         const realizedCol = readCol(cd,["Realized (₹L)"]);
         const gapCol      = readCol(cd,["Gap (₹L)"]);
-        const b2b = cd.rows.find(r => {
-  const driver = String(r[driverCol]).trim().toLowerCase();
-  return driver === "b2b 500 new nests";
-});
+        const b2b = cd.rows.find(r => String(r[driverCol]).toLowerCase().includes("b2b"));
         if(b2b){
-         
-});
           const plan     = toNum(b2b[planCol]) || 0;
           const realized = toNum(b2b[realizedCol]) || 0;
           const gap      = gapCol != null && b2b[gapCol] !== "" ? (toNum(b2b[gapCol]) || 0)
                           : Math.max(plan - realized, 0);
           const achPct   = plan ? Math.round(realized / plan * 100) : 0;
-         console.log({
-  plan,
-  realized,
-  gap,
-  achPct
           base.currentRate = (Math.round(realized * 100) / 100) + "L realised";
           base.driver      = (Math.round(gap * 100) / 100) + "L CM gap";
           base.gapLabel    = (Math.round(gap * 100) / 100) + "L gap";
@@ -3224,9 +3208,6 @@ if(name === "Work"){
         gap.toFixed(2) + "L gap";
     }
   }
-}
-  if (name === "Close B2B conversion") {
-  console.log("After Live Update", base);
 }
   return base;
 }
