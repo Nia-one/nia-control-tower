@@ -2443,6 +2443,7 @@ function formattedCell(header, value, isNumeric=false){
   return esc(val);
 }
 function renderRecordCards(data, rows, numCols){
+  console.log("RENDER RECORD CARDS CALLED");
   const originalHeaders = data.headers;
   const HIDDEN_FIELDS = [
   "WK",
@@ -2498,7 +2499,7 @@ rows.forEach(r => {
 }
 console.table(rows);
   const isPriorityTab = CONFIG.tabs[state.active].label === "Priorities";
-  
+  console.log("ACTIVE TAB:", CONFIG.tabs[state.active].label);
   return `<div class="divide-y divide-nia-hair/70 bg-white">
     ${rows.map(r=>{
   const p = isPriorityTab ? livePriority(r[titleIdx]) : null;
