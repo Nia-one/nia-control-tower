@@ -3300,7 +3300,7 @@ if(name === "Work"){
       if (!p) return;
       if (metric === "Collections recovery") {
 
-    r[currentCol] = p.currentRate;
+    r[currentCol] = Math.round(toNum(p.currentRate)).toLocaleString();
     r[targetCol] = "59.9L target";
     r[gapCol] = p.gapLabel;
     r[doneCol] = p.done + "%";
@@ -3309,6 +3309,7 @@ if(name === "Work"){
 
     return;
 }
+      
 
 // B2B
 if (metric === "B2B 500 nests CM") {
