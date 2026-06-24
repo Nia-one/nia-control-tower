@@ -3261,7 +3261,80 @@ if(name === "Work"){
   }
 }
   return base;
+}
   function refreshDORLiveValues(){
+
+    const dorIdx = tabIndexByLabel("DOR");
+    const dor = state.data[dorIdx];
+
+    if (!dor || !dor.rows || !dor.headers) return;
+
+    const metricCol = readCol(dor, ["Metric"]);
+    const currentCol = readCol(dor, ["Current"]);
+    const gapCol = readCol(dor, ["Gap"]);
+   const targetCol  = readCol(dor, ["Target"]);
+    const doneCol = readCol(dor, ["Done %"]);
+    const leftCol = readCol(dor, ["Left %"]);
+    const askCol = readCol(dor, ["Ask Rate"]);
+
+    dor.rows.forEach(r => {
+
+        const metric = String(r[metricCol]).trim();
+
+        let p = null;
+
+        if (metric === "FONO live nests")
+            p = livePriority("Priority Convert FONO funnel");
+
+        else if (metric === "Wellington occupancy")
+            p = livePriority("Fix Wellington occupancy drag");
+
+        else if (metric === "B2B 500 nests CM")
+            p = livePriority("Close B2B conversion");
+
+        else if (metric === "Collections recovery")
+            p = livePriority("Recover collections");
+
+        else if (metric === "Essentials attach")
+            p = livePriority("Monetise member wallet");
+
+      if (!p) return;
+
+// Update live Current / Gap / Ask Rate
+if (currentCol >= 0) r[currentCol] = p.currentRate || r[currentCol];
+if (gapCol >= 0) r[gapCol] = p.gapLabel || p.driver || r[gapCol];
+if (askCol >= 0) r[askCol] = p.askRate || "";
+
+// Calculate Done % and Left % from Current & Target
+const currentValue = toNum(r[currentCol]);
+const targetValue  = toNum(r[targetCol]);
+
+if (
+    doneCol >= 0 &&
+    leftCol >= 0 &&
+    targetValue > 0 &&
+    metric !== "EBITDA gap"
+) {
+    const done = Math.round((currentValue / targetValue) * 100);
+    const left = Math.max(0, 100 - done);
+
+    r[doneCol] = done + "%";
+    r[leftCol] = left + "%";
+}
+      const currentValue = toNum(r[currentCol]);
+const targetValue  = toNum(r[targetCol]);
+
+if (doneCol >= 0 && leftCol >= 0 &&
+    currentValue != null &&
+    targetValue > 0) {
+
+    const done = Math.round((currentValue / targetValue) * 100);
+    const left = Math.max(0, 100 - done);
+
+    r[doneCol] = done + "%";
+    r[leftCol] = left + "%";
+}
+    });
 
 }
 }
