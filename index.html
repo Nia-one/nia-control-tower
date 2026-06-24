@@ -3324,14 +3324,8 @@ if (metric === "B2B 500 nests CM") {
     return;
 }
 // Calculate Done % and Left % from Current & Target
-      let currentValue = r[current];
-
-if (String(r[entity]).trim() === "FONO Visited funnel") {
-    const p = livePriority("Priority Convert FONO funnel");
-    currentValue = p.currentRate.replace(" live nests", "") + " / 3,500";
-}
-const currentValue = toNum(r[currentCol]);
-const targetValue  = toNum(r[targetCol]);
+let currentValue = toNum(r[currentCol]);
+const targetValue = toNum(r[targetCol]);
 
 if (
     doneCol >= 0 &&
@@ -3344,8 +3338,7 @@ if (
 
     r[doneCol] = done + "%";
     r[leftCol] = left + "%";
-}
-      
+}      
     });
 
 }
