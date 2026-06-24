@@ -2442,6 +2442,9 @@ rows.forEach(r => {
   const restIdx=headers.map((h,i)=>i).filter(i=>i!==titleIdx && i!==badgeIdx && !metricIdx.includes(i) && !longIdx.includes(i));
 
  console.log("TAB:", CONFIG.tabs[state.active].label);
+  if (CONFIG.tabs[state.active].label === "Essentials Pilot") {
+    return "";
+}
 console.table(rows);
   
   return `<div class="divide-y divide-nia-hair/70 bg-white">
