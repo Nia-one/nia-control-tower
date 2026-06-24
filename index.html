@@ -2324,6 +2324,8 @@ function aggregateOn(tabIdx,k){
 if (k.agg === "read") {
 
   // Special handling for Essentials Pilot (Metric | Value | Unit format)
+  console.log("Current Tab =", k.tab);
+console.log("Current Column =", k.col);
   if (k.tab === "Essentials Pilot") {
 
     const metricCol = colIndex(H, "Metric");
