@@ -2966,17 +2966,18 @@ console.log(sd.headers);
   return driver === "b2b 500 new nests";
 });
         if(b2b){
-          console.log({
-  plan,
-  realized,
-  gap,
-  achPct
+         
 });
           const plan     = toNum(b2b[planCol]) || 0;
           const realized = toNum(b2b[realizedCol]) || 0;
           const gap      = gapCol != null && b2b[gapCol] !== "" ? (toNum(b2b[gapCol]) || 0)
                           : Math.max(plan - realized, 0);
           const achPct   = plan ? Math.round(realized / plan * 100) : 0;
+         console.log({
+  plan,
+  realized,
+  gap,
+  achPct
           base.currentRate = (Math.round(realized * 100) / 100) + "L realised";
           base.driver      = (Math.round(gap * 100) / 100) + "L CM gap";
           base.gapLabel    = (Math.round(gap * 100) / 100) + "L gap";
