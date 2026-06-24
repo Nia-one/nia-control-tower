@@ -2521,7 +2521,7 @@ if (CONFIG.tabs[state.active].label === "Priorities") {
 }
 
 return `<div class="divide-y divide-nia-hair/70 bg-white">
-${rows.map(r=>`
+${rows.map(r=>{
  const p = CONFIG.tabs[state.active].label === "Priorities"
       ? livePriority(r[0])
       : null;
@@ -2589,7 +2589,7 @@ ${(() => {
   : formattedCell(headers[i], r[i], numCols[i])}</span></div>`).join("")}
         </div>` : ""}
       </article>`)
-  .join("")`;
+  .join("");
   </div>`;
 }
 function stageRank(stage){
