@@ -2497,9 +2497,31 @@ rows.forEach(r => {
     return "";
 }
 console.table(rows);
-  
-  return `<div class="divide-y divide-nia-hair/70 bg-white">
-    ${rows.map(r=>`
+
+if (CONFIG.tabs[state.active].label === "Priorities") {
+
+    rows = rows.map(r => {
+
+        const p = livePriority(r[0]);
+
+        if (!p) return r;
+
+        const row = [...r];
+
+        row[1] = p.done + "% done / " + p.left + "% left";
+        row[2] = p.currentRate;
+        row[4] = p.gapLabel;
+
+        return row;
+
+    });
+
+    console.table(rows);
+
+}
+
+return `<div class="divide-y divide-nia-hair/70 bg-white">
+${rows.map(r=>`
       <article class="record-card p-5 md:p-6 hover:bg-nia-wash/60 transition-colors">
         <div class="flex flex-col md:flex-row md:items-start justify-between gap-3 mb-4">
           <div class="min-w-0">
