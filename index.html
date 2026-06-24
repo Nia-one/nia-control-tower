@@ -3389,7 +3389,7 @@ Daily behavior: ${focus.behavior}
     rows.forEach(r=>{ const key=r[corridor]||"Other"; byCorridor[key]=(byCorridor[key]||0)+(toNum(r[expected])||0); });
     host.innerHTML =
       cockpitCard("Easy Expected Nests", inr(totalExpected), `<div class="h-2 bg-nia-panel rounded-full overflow-hidden mb-4"><div class="h-full bg-nia-blue rounded-full" style="width:${clamp(totalExpected/900*100)}%"></div></div><div class="text-sm text-nia-mute">Model-selected set covers ${inr(totalPotential)} potential nests and ${inr(totalExpected)} expected nests.</div>`, "gauge") +
-      cockpitCard("Top Close", esc(top?.[prospect] || "–"), `<div class="text-sm text-nia-mute leading-relaxed">${esc(top?.[corridor] || "")} · ease ${esc(top?.[ease] || "–")} · expected ${esc(top?.[expected] || "–")} nests.</div>`, "badge-check") +
+      cockpitCard("Top Close", esc(top?.[prospect] || "–"), `<div class="text-sm text-nia-mute leading-relaxed">${esc(top?.[corridor] || "")} · ease ${Math.round(toNum(top?.[ease]) || 0)} · expected ${esc(top?.[expected] || "–")} nests.</div>`, "badge-check") +
       cockpitCard("Where To Push", "Farukhnagar", barRows(Object.entries(byCorridor).map(([label,value])=>({label,value:inr(value),width:clamp(value/(totalExpected||1)*100)}))), "map-pin");
     return;
   }
