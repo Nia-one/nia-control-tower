@@ -2521,14 +2521,7 @@ if (CONFIG.tabs[state.active].label === "Priorities") {
 }
 
 return `<div class="divide-y divide-nia-hair/70 bg-white">
-${rows.map(r=>{
- const p = CONFIG.tabs[state.active].label === "Priorities"
-      ? livePriority(r[0])
-      : null;
-
-  console.log("CARD:", r[0], p);
-
-  return `
+${rows.map(r=>`
       <article class="record-card p-5 md:p-6 hover:bg-nia-wash/60 transition-colors">
         <div class="flex flex-col md:flex-row md:items-start justify-between gap-3 mb-4">
           <div class="min-w-0">
@@ -2588,8 +2581,7 @@ ${(() => {
   ? Math.round(toNum(r[i]) || 0)
   : formattedCell(headers[i], r[i], numCols[i])}</span></div>`).join("")}
         </div>` : ""}
-      </article>`)
-  .join("")}
+      </article>`).join("")}
   </div>`;
 }
 function stageRank(stage){
@@ -2933,55 +2925,8 @@ function getRiskBadgeClass(text) {
 
 // Live-data resolver: overrides static PRIORITY_PROGRESS fields with values
 // computed from the loaded tab data so drivers/rates reflect the live sheet.
-function liveMetric(name){
-
-  const result = {};
-
-  switch(name){
-
-    case "Close B2B conversion":
-
-      const ci = tabIndexByLabel("CM Actions");
-      const cd = state.data[ci];
-
-      if(cd){
-
-        const driverCol   = readCol(cd,["Driver"]);
-        const planCol     = readCol(cd,["Plan (₹L)"]);
-        const realizedCol = readCol(cd,["Realized (₹L)"]);
-        const gapCol      = readCol(cd,["Gap (₹L)"]);
-
-        const row = cd.rows.find(r =>
-          String(r[driverCol]).trim().toLowerCase() === "b2b 500 new nests"
-        );
-
-        if(row){
-
-          const plan = toNum(row[planCol]) || 0;
-          const realized = toNum(row[realizedCol]) || 0;
-          const gap = toNum(row[gapCol]) || 0;
-
-          result.done = Math.round(realized/plan*100);
-          result.left = 100-result.done;
-
-          result.current = realized;
-          result.target = plan;
-          result.gap = gap;
-
-        }
-
-      }
-
-      break;
-
-  }
-
-  return result;
-
-}
-  function livePriority(name){
+function livePriority(name){
   const base = {...(PRIORITY_PROGRESS[name] || {})};
-    const live = liveMetric(name);
   try {
     // FONO funnel: sum Visited / live nests straight from the FONO tab.
     // Live sheet is one row PER CORRIDOR with columns Visited, Onboarded (Live),
