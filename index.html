@@ -2965,18 +2965,6 @@ console.log(sd.headers);
   const driver = String(r[driverCol]).trim().toLowerCase();
   return driver === "b2b 500 new nests";
 });
-        console.log("===== CM ACTIONS =====");
-
-cd.rows.forEach(r => {
-  console.log(
-    r[driverCol],
-    "Plan:", r[planCol],
-    "Realized:", r[realizedCol],
-    "Gap:", r[gapCol]
-  );
-});
-
-console.log("Selected Row:", b2b);
         if(b2b){
           console.log({
   plan,
