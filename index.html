@@ -3437,6 +3437,7 @@ function renderCockpit(){
     const owner=readCol(d,["Owner"]);
     const current=readCol(d,["Current"]);
     const target=readCol(d,["Target"]);
+    const gap = readCol(d,["Gap"]);
     const status=readCol(d,["Status"]);
     const action=readCol(d,["Action"]);
     const wkCols=["Wk-5","Wk-4","Wk-3","Wk-2","Wk-1","Wk"].map(name=>readCol(d,[name]));
