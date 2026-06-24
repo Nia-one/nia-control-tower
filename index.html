@@ -2277,6 +2277,9 @@ if (tab.label === "Priorities") {
   fetchedAt: new Date(),
   status: "live"
 };
+      if (tab.label === "DOR") {
+    refreshDORLiveValues();
+}
 
 state.data[tab.label] = state.data[idx];      
       return;
@@ -3258,6 +3261,9 @@ if(name === "Work"){
   }
 }
   return base;
+  function refreshDORLiveValues(){
+
+}
 }
 
 const PRIORITY_PROGRESS = {
