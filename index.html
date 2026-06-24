@@ -3449,6 +3449,7 @@ function renderCockpit(){
       cockpitCard("Daily Ops Review", `${inputCriticalRows.length} red inputs`, barRows(rows.map(r => {
 
     let value = r[current];
+        console.log("Metric:", String(r[metric]).trim(), "Value:", value);
 
     // B2B from live CM Actions
  console.log("DOR Metric =", "[" + String(r[metric]).trim() + "]");
