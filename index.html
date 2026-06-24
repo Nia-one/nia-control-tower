@@ -3324,6 +3324,12 @@ if (metric === "B2B 500 nests CM") {
     return;
 }
 // Calculate Done % and Left % from Current & Target
+      let currentValue = r[current];
+
+if (String(r[entity]).trim() === "FONO Visited funnel") {
+    const p = livePriority("Priority Convert FONO funnel");
+    currentValue = p.currentRate.replace(" live nests", "") + " / 3,500";
+}
 const currentValue = toNum(r[currentCol]);
 const targetValue  = toNum(r[targetCol]);
 
@@ -3534,7 +3540,7 @@ function renderCockpit(){
     host.innerHTML =
       cockpitCard("Daily Ops Review", `${inputCriticalRows.length} red inputs`, barRows(rows.map(r => {
 
-    let value = r[current];
+    let value = currentValue;
         console.log(
     "Compare:",
     JSON.stringify(String(r[metric]).trim()),
@@ -3774,6 +3780,12 @@ Daily behavior: ${focus.behavior}
   }
 
   if(tab==="Enterprise"){
+    let currentValue = r[current];
+
+if (String(r[entity]).trim() === "FONO Visited funnel") {
+    const p = livePriority("Priority Convert FONO funnel");
+    currentValue = p.currentRate.replace(" live nests", "") + " / 3,500";
+}
     const workstream=readCol(d,["Workstream"]);
     const current=readCol(d,["Current"]);
     const target=readCol(d,["Target (₹L)"]);
@@ -3781,7 +3793,7 @@ Daily behavior: ${focus.behavior}
     const gap=readCol(d,["Gap (₹L)"]);
     const ach=readCol(d,["Achievement %"]);
     const b2b=rows.find(r=>String(r[workstream]).includes("B2B")) || rows[0];
-    const billingRows=rows.filter(r=>String(r[current]).includes("June billing") || String(r[current]).includes("estimated billing"));
+    const billingRows=rows.filter(r=>String(currentValue).includes("June billing") || String(currentValue).includes("estimated billing"));
     const maxBilling=Math.max(...billingRows.map(r=>toNum(r[realized])||0),1);
     host.innerHTML =
       cockpitCard("B2B Close Rate", fmt(toNum(b2b?.[ach])||0,"pct"), `<div class="h-2 bg-nia-panel rounded-full overflow-hidden mb-4"><div class="h-full bg-nia-clay rounded-full" style="width:${clamp(toNum(b2b?.[ach])||0)}%"></div></div><div class="text-sm text-nia-mute">${esc(b2b?.[gap] || "1.74")}L CM gap against the June B2B target.</div>`, "briefcase-business") +
