@@ -2525,7 +2525,7 @@ ${(() => {
     switch (headers[i]) {
 
       case "Progress":
-        return `${p.done}% done / ${p.left}% left`;
+        return p.done + "% done / " + p.left + "% left";
 
       case "Current":
         return p.currentRate || String(r[i]);
