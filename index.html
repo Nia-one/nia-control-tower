@@ -2878,7 +2878,11 @@ function getRiskBadgeClass(text) {
 // Live-data resolver: overrides static PRIORITY_PROGRESS fields with values
 // computed from the loaded tab data so drivers/rates reflect the live sheet.
 function livePriority(name){
+  
   const base = {...(PRIORITY_PROGRESS[name] || {})};
+  if (name === "Close B2B conversion") {
+  console.log("Before Live Update", base);
+}
   try {
     // FONO funnel: sum Visited / live nests straight from the FONO tab.
     // Live sheet is one row PER CORRIDOR with columns Visited, Onboarded (Live),
@@ -3219,6 +3223,9 @@ if(name === "Work"){
         gap.toFixed(2) + "L gap";
     }
   }
+}
+  if (name === "Close B2B conversion") {
+  console.log("After Live Update", base);
 }
   return base;
 }
