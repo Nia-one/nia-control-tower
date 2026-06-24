@@ -2515,10 +2515,36 @@ console.table(rows);
         <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 mb-4">
           ${metricIdx.map(i=>`<div class="bg-nia-wash rounded-md p-3 min-w-0">
             <div class="text-[11px] text-nia-mute font-semibold mb-1 break-words">${esc(headers[i])}</div>
-            <div class="text-sm ${numCols[i] ? "tabular-nums font-bold text-nia-ink" : "font-semibold text-nia-body"} break-words">${headers[i] === "Ease Score"
-    ? Math.round(toNum(r[i]) || 0)
-    : String(r[i])}</div>
-            
+            <div class="text-sm ${numCols[i] ? "tabular-nums font-bold text-nia-ink" : "font-semibold text-nia-body"} break-words">
+${(() => {
+
+  if (CONFIG.tabs[state.active].label === "Priorities") {
+
+    const p = livePriority(r[0]) || {};
+
+    switch (headers[i]) {
+
+      case "Progress":
+        return `${p.done}% done / ${p.left}% left`;
+
+      case "Current":
+        return p.currentRate || String(r[i]);
+
+      case "Gap":
+        return p.gapLabel || p.driver || String(r[i]);
+
+      default:
+        return String(r[i]);
+    }
+
+  }
+
+  return headers[i] === "Ease Score"
+      ? Math.round(toNum(r[i]) || 0)
+      : String(r[i]);
+
+})()}
+</div> 
           </div>`).join("")}
         </div>
         ${longIdx.map(i=>`<div class="mb-3 min-w-0">
