@@ -3559,8 +3559,11 @@ function renderTable(){
     hint.innerHTML = `<i data-lucide="layout-list" class="w-3.5 h-3.5"></i> Detail shown as readable action cards`;
   }
 
-  host.innerHTML=renderRecordCards(d, rows, numCols);
-  updateDetailNote(rows.length);
+if (state.active !== "Essentials Pilot") {
+  host.innerHTML = renderRecordCards(d, rows, numCols);
+} else {
+  host.innerHTML = "";
+}  updateDetailNote(rows.length);
 }
 
 function updateDetailNote(count){
