@@ -3321,19 +3321,7 @@ if (
     r[doneCol] = done + "%";
     r[leftCol] = left + "%";
 }
-      const currentValue = toNum(r[currentCol]);
-const targetValue  = toNum(r[targetCol]);
-
-if (doneCol >= 0 && leftCol >= 0 &&
-    currentValue != null &&
-    targetValue > 0) {
-
-    const done = Math.round((currentValue / targetValue) * 100);
-    const left = Math.max(0, 100 - done);
-
-    r[doneCol] = done + "%";
-    r[leftCol] = left + "%";
-}
+      
     });
 
 }
