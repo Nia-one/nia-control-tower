@@ -2482,7 +2482,7 @@ console.table(rows);
           ${metricIdx.map(i=>`<div class="bg-nia-wash rounded-md p-3 min-w-0">
             <div class="text-[11px] text-nia-mute font-semibold mb-1 break-words">${esc(headers[i])}</div>
             <div class="text-sm ${numCols[i] ? "tabular-nums font-bold text-nia-ink" : "font-semibold text-nia-body"} break-words">${headers[i] === "Ease Score"
-    ? "TEST123"
+    ? Math.round(toNum(r[i]) || 0)
     : String(r[i])}</div>
             
           </div>`).join("")}
