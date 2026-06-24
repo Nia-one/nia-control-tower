@@ -3386,7 +3386,7 @@ Daily behavior: ${focus.behavior}
   if(tab==="FONO Ease"){
     const prospect=readCol(d,["Prospect"]);
     const corridor=readCol(d,["Corridor"]);
-    const nests=readCol(d,["Potential Nests"]);
+    const nests = readCol(d, ["Potential Nests", "Visited"]);
     const ease=readCol(d,["Ease Score"]);
     const expected=readCol(d,["Expected Nests"]);
     const totalExpected=rows.reduce((a,r)=>a+(toNum(r[expected])||0),0);
