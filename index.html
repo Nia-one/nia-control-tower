@@ -2331,14 +2331,15 @@ if (k.agg === "read") {
 
     if (metricCol >= 0 && valueCol >= 0) {
 
-      for (const r of R) {
+for (const r of R) {
 
-        if (String(r[metricCol]).trim() === k.col) {
-          return toNum(r[valueCol]);
-        }
+    console.log("Metric =", r[metricCol], "Value =", r[valueCol]);
 
-      }
+    if (String(r[metricCol]).trim() === k.col) {
+        return (toNum(r[valueCol]) || 0) / 100000;
+    }
 
+}
     }
 
     return null;
