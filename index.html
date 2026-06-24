@@ -2960,7 +2960,10 @@ console.log(sd.headers);
         const planCol     = readCol(cd,["Plan (₹L)"]);
         const realizedCol = readCol(cd,["Realized (₹L)"]);
         const gapCol      = readCol(cd,["Gap (₹L)"]);
-        const b2b = cd.rows.find(r => String(r[driverCol]).toLowerCase().includes("b2b"));
+        const b2b = cd.rows.find(r => {
+  const driver = String(r[driverCol]).trim().toLowerCase();
+  return driver === "b2b 500 new nests";
+});
         if(b2b){
           const plan     = toNum(b2b[planCol]) || 0;
           const realized = toNum(b2b[realizedCol]) || 0;
