@@ -3295,16 +3295,33 @@ if(name === "Work"){
         else if (metric === "Collections recovery")
             p = livePriority("Recover collections");
 
-        else if (metric === "Essentials attach")
-            p = livePriority("Monetise member wallet");
+       
 
       if (!p) return;
+      if (metric === "Collections recovery") {
 
-// Update live Current / Gap / Ask Rate
-if (currentCol >= 0) r[currentCol] = p.currentRate || r[currentCol];
-if (gapCol >= 0) r[gapCol] = p.gapLabel || p.driver || r[gapCol];
-if (askCol >= 0) r[askCol] = p.askRate || "";
+    r[currentCol] = p.currentRate;
+    r[targetCol] = "59.9L target";
+    r[gapCol] = p.gapLabel;
+    r[doneCol] = p.done + "%";
+    r[leftCol] = p.left + "%";
+    r[askCol] = p.askRate;
 
+    return;
+}
+
+// B2B
+if (metric === "B2B 500 nests CM") {
+
+    r[currentCol] = p.currentRate;
+    r[targetCol] = "2.28L target";
+    r[gapCol] = p.gapLabel;
+    r[doneCol] = p.done + "%";
+    r[leftCol] = p.left + "%";
+    r[askCol] = p.askRate;
+
+    return;
+}
 // Calculate Done % and Left % from Current & Target
 const currentValue = toNum(r[currentCol]);
 const targetValue  = toNum(r[targetCol]);
