@@ -2498,23 +2498,6 @@ rows.forEach(r => {
     return "";
 }
 console.table(rows);
-  if (CONFIG.tabs[state.active].label === "Priorities") {
-  rows = rows.map(r => {
-    const p = livePriority(r[0]);
-
-    if (!p) return r;
-
-    const copy = [...r];
-
-    copy[1] = `${p.done}% done / ${p.left}% left`; // Progress
-    copy[2] = p.currentRate;                       // Current
-    copy[4] = p.gapLabel || p.driver;              // Gap
-
-    return copy;
-  });
-
-  console.table(rows);
-}
   const isPriorityTab = CONFIG.tabs[state.active].label === "Priorities";
   console.log("ACTIVE TAB:", CONFIG.tabs[state.active].label);
   return `<div class="divide-y divide-nia-hair/70 bg-white">
@@ -2557,7 +2540,8 @@ console.table(rows);
     default:
       return String(r[i]);
   }
-})()}</div>
+})()}
+    : String(r[i])}</div>
             
           </div>`).join("")}
         </div>
