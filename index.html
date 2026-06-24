@@ -3484,8 +3484,60 @@ Daily behavior: ${focus.behavior}
     host.innerHTML =
       cockpitCard("Highest Drag Entity", esc(top?.[entity] || "–"), `<div class="text-sm text-nia-mute leading-relaxed">${esc(top?.[theatre] || "")} · score ${esc(top?.[score] || "–")}. This is the first entity to discuss in the daily drag review.</div>`, "siren") +
       cockpitCard("Drag Mix", `${rows.length} entities`, barRows(Object.entries(byDriver).map(([label,value])=>({label,value:inr(value),width:clamp(value/rows.length*100),alert:label!=="Collections"})), "red"), "layers") +
-      cockpitCard("Operating Rule", "One owner", `<div class="text-sm text-nia-mute leading-relaxed">Every entity above 15 needs one owner, a clear action path, and a next review date. If the action is not fill, collect, retain, renegotiate, or exit, it is probably too vague.</div>`, "user-check");
-    return;
+(() => {
+
+  const drag = state.data["Drag Scores"];
+
+  let title = "One owner";
+  let text =
+    "Every entity above 15 needs one owner, a clear action path and a next review date.";
+
+  if (drag && drag.rows && drag.rows.length) {
+
+    const primary = String(drag.rows[0][4] || "");
+
+    switch (primary) {
+
+      case "Collections":
+        title = "Collections First";
+        text =
+          "Recover every studio with high outstanding dues before expanding new supply.";
+        break;
+
+      case "Movement":
+        title = "Stop Checkout Leakage";
+        text =
+          "Investigate every studio with negative net movement before adding new occupancy.";
+        break;
+
+      case "Occupancy":
+        title = "Fill Before You Build";
+        text =
+          "Close occupancy gaps before activating additional inventory.";
+        break;
+
+      case "Studio economics":
+        title = "Protect Studio Economics";
+        text =
+          "Review negative CM studios and renegotiate rent before expansion.";
+        break;
+
+      default:
+        title = "Improve CM";
+        text =
+          "Focus on improving contribution margin while maintaining healthy occupancy.";
+    }
+
+  }
+
+  return cockpitCard(
+    "Operating Rule",
+    title,
+    `<div class="text-sm text-nia-mute leading-relaxed">${text}</div>`,
+    "user-check"
+  );
+
+})()    return;
   }
 
   if(tab==="Enterprise"){
