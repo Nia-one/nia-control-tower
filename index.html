@@ -3449,7 +3449,13 @@ function renderCockpit(){
       cockpitCard("Daily Ops Review", `${inputCriticalRows.length} red inputs`, barRows(rows.map(r => {
 
     let value = r[current];
-        if (String(r[metric]).trim() === "EBITDA gap") {
+        console.log(
+    "Compare:",
+    JSON.stringify(String(r[metric]).trim()),
+    JSON.stringify("EBITDA gap")
+);
+
+if (String(r[metric]).trim() === "EBITDA gap") {
     console.log("✅ EBITDA MATCH", r[gap]);
     value = r[gap];
 }
@@ -3471,7 +3477,13 @@ if (String(r[metric]).trim() === "B2B 500 nests CM") {
 
     value = livePriority("Recover collections").currentRate;
 }
-        if (String(r[metric]).trim() === "Member Wallet") {
+        console.log(
+    "Compare:",
+    JSON.stringify(String(r[metric]).trim()),
+    JSON.stringify("Member Wallet")
+);
+
+if (String(r[metric]).trim() === "Member Wallet") {
     console.log("✅ MEMBER WALLET MATCH", value);
     value = Math.round(toNum(value)).toLocaleString();
 }
