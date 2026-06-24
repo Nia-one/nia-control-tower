@@ -3499,7 +3499,51 @@ if (String(r[metric]).trim() === "Member Wallet") {
     };
 
 }), "red"), "calendar-days") +
-      cockpitCard("Review Rule", `${inputRows.length} input metrics`, `<div class="text-sm text-nia-mute leading-relaxed">The DOR starts with inputs, not EBITDA. Outputs stay visible, but the meeting asks: which input is below ask, who owns it, what changed this week, and what action is due before the next review?</div><div class="mt-3 text-sm font-semibold text-nia-blue">${esc(firstCritical?.[action] || "–")}</div>`, "clipboard-check");
+      cockpitCard(
+  "Current Focus",
+  `${inputCriticalRows.length} critical inputs`,
+  `
+  <div class="space-y-3 text-sm">
+
+    <div>
+      <div class="text-nia-mute text-xs">Highest Priority</div>
+      <div class="font-semibold text-nia-ink">
+        ${esc(firstCritical?.[metric] || "–")}
+      </div>
+    </div>
+
+    <div>
+      <div class="text-nia-mute text-xs">Owner</div>
+      <div class="font-semibold text-nia-ink">
+        ${esc(firstCritical?.[owner] || "–")}
+      </div>
+    </div>
+
+    <div>
+      <div class="text-nia-mute text-xs">Current Value</div>
+      <div class="font-semibold text-nia-ink">
+        ${esc(firstCritical?.[current] || "–")}
+      </div>
+    </div>
+
+    <div>
+      <div class="text-nia-mute text-xs">Target</div>
+      <div class="font-semibold text-nia-ink">
+        ${esc(firstCritical?.[target] || "–")}
+      </div>
+    </div>
+
+    <div>
+      <div class="text-nia-mute text-xs">Next Action</div>
+      <div class="font-semibold text-nia-blue">
+        ${esc(firstCritical?.[action] || "–")}
+      </div>
+    </div>
+
+  </div>
+  `,
+  "clipboard-check"
+)
     return;
   }
 
