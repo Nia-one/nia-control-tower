@@ -2953,6 +2953,7 @@ console.log(sd.headers);
     // Close B2B conversion: pull Plan/Realized/Gap from the CM Actions tab
     // (driver row "B2B 500 new nests"). Source of truth for B2B CM.
     if(name === "Close B2B conversion"){
+      console.log("LIVE B2B RUNNING");
       const ci = tabIndexByLabel("CM Actions");
       const cd = state.data[ci];
       if(cd && cd.headers && cd.rows && cd.rows.length){
@@ -2977,6 +2978,12 @@ cd.rows.forEach(r => {
 
 console.log("Selected Row:", b2b);
         if(b2b){
+          console.log({
+  plan,
+  realized,
+  gap,
+  achPct
+});
           const plan     = toNum(b2b[planCol]) || 0;
           const realized = toNum(b2b[realizedCol]) || 0;
           const gap      = gapCol != null && b2b[gapCol] !== "" ? (toNum(b2b[gapCol]) || 0)
