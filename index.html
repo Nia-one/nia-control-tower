@@ -1949,7 +1949,8 @@ const CONFIG = {
     { label:"Priorities", gid:"639449170", icon:"target" },
     { label:"DOR", gid:"933267166", icon:"calendar-days" },
     { label:"Exceptions", gid:"140049341", icon:"shield-alert" },
-   { label:"CM Actions", gid:"1765031340", icon:"list-checks" },
+    { label:"404s", gid:"1146530277", icon:"search-check" },
+    { label:"CM Actions", gid:"1765031340", icon:"list-checks" },
     { label:"Studios", gid:"111691110", icon:"building-2" },
     { label:"Drag Scores", gid:"1982642636", icon:"siren" },
     { label:"Enterprise", gid:"1125453448", icon:"briefcase-business" },
@@ -1995,6 +1996,16 @@ const SAMPLE = {
       ["Critical","K Saralavathi Kothandaraman","Collections","21 Jun","Membership due","2.47L due","Promise today","No collection against target","Largest due pool has no recent collection pace.","Owner escalation and payer confirmation today."],
       ["At Risk","Rajputana Essentials","Studio Ops","23 Jun","Wallet attach","1.0%","3.9%","Bundle not default at check-in","Attach is optional and manager-led, not system-led.","Make Curry + Essentials default bundle in check-in script."],
       ["At Risk","Nia Nest Naresh","Wellington Ops","22 Jun","Occupancy gap","136 nests","24/day","Empty active capacity","Fill demand is not mapped to this supply.","Assign named demand source or mark exit/renegotiation path."]
+    ]
+  },
+  "404s": {
+    headers: ["404","Trigger","Owner","Repeats","Five Why Root","Input Metric","Containment","Permanent Countermeasure","Next Review"],
+    rows: [
+      ["Visited-to-live conversion","FONO live nests below ask for 2 weeks","FONO Lead","3","Visits happen without a commercial close standard; no penalty for stale visited inventory.","Visited-to-contracting SLA","Daily visited ageing review.","No visit is complete without commercial terms, deposit ask, blocker, and next date.","21 Jun"],
+      ["Wellington occupancy drag","Occupancy below 80% with live supply","City Ops","4","Supply decisions and demand commitments are not reviewed in one owner cadence.","Active beds filled before new supply","Freeze new supply and map B2B/FONO demand to WLG beds.","Weekly supply gate: open capacity only with named demand.","22 Jun"],
+      ["Collections leakage","Top studios carry dues despite transaction activity","Collections","3","Collection ownership is studio-level but escalation is not tied to payer/promise date.","Due cleared per studio","Daily top-12 promise-date tracker.","Payer-level ageing board; unresolved promise auto-escalates next day.","21 Jun"],
+      ["Enterprise close discipline","B2B target 13% achieved","Enterprise","2","Pipeline has account names but not a close calendar with nest count and blocker.","Close-date coverage","Daily enterprise close standup.","Every account row must have next meeting, close date, and committed nests.","22 Jun"],
+      ["Wallet attach variability","Attach below hurdle outside Wellington","Studio Ops","2","Bundle offer depends on manager behavior instead of a default check-in motion.","Attach % by theatre","Copy Wellington script to Rajputana and Deccan.","Default bundle in check-in checklist with daily attach score.","23 Jun"]
     ]
   },
   "CM Actions": {
