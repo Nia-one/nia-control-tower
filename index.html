@@ -3499,7 +3499,6 @@ if (String(r[metric]).trim() === "Member Wallet") {
     };
 
 }), "red"), "calendar-days") +
-      cockpitCard("6-Point Trend", esc(firstCritical?.[metric] || "–"), `${sparkline(series, toNum(firstCritical?.[target]), String(firstCritical?.[status]).includes("Critical") ? "red" : "blue")}<div class="text-xs text-nia-mute mt-2">Target line is shown as a dashed rule; owner: <span class="font-semibold text-nia-body">${esc(firstCritical?.[owner] || "–")}</span>.</div>`, "line-chart") +
       cockpitCard("Review Rule", `${inputRows.length} input metrics`, `<div class="text-sm text-nia-mute leading-relaxed">The DOR starts with inputs, not EBITDA. Outputs stay visible, but the meeting asks: which input is below ask, who owns it, what changed this week, and what action is due before the next review?</div><div class="mt-3 text-sm font-semibold text-nia-blue">${esc(firstCritical?.[action] || "–")}</div>`, "clipboard-check");
     return;
   }
