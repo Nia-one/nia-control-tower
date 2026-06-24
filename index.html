@@ -2489,10 +2489,15 @@ console.table(rows);
         </div>
         ${longIdx.map(i=>`<div class="mb-3 min-w-0">
           <div class="text-[11px] text-nia-mute font-semibold mb-1">${esc(headers[i])}</div>
-          <div class="text-sm leading-relaxed break-words">${formattedCell(headers[i], r[i], numCols[i])}</div>
+          <div class="text-sm leading-relaxed break-words">${headers[i] === "Expected Nests"
+  ? Math.round(toNum(r[i]) || 0)
+  : formattedCell(headers[i], r[i], numCols[i])}
+  </div>
         </div>`).join("")}
         ${restIdx.length ? `<div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
-          ${restIdx.map(i=>`<div class="text-sm min-w-0"><span class="font-semibold text-nia-ink">${esc(headers[i])}:</span> <span class="text-nia-body break-words">${formattedCell(headers[i], r[i], numCols[i])}</span></div>`).join("")}
+          ${restIdx.map(i=>`<div class="text-sm min-w-0"><span class="font-semibold text-nia-ink">${esc(headers[i])}:</span> <span class="text-nia-body break-words">${headers[i] === "Expected Nests"
+  ? Math.round(toNum(r[i]) || 0)
+  : formattedCell(headers[i], r[i], numCols[i])}</span></div>`).join("")}
         </div>` : ""}
       </article>`).join("")}
   </div>`;
