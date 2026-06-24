@@ -3476,6 +3476,12 @@ Daily behavior: ${focus.behavior}
   const metricCol = readCol(d, ["Metric"]);
   const valueCol  = readCol(d, ["Value"]);
   const unitCol   = readCol(d, ["Unit"]);
+   console.log("Headers:", d.headers);
+console.log("metricCol =", metricCol);
+console.log("valueCol =", valueCol);
+console.log("unitCol =", unitCol);
+   console.log(metricCol, valueCol, unitCol);
+console.log(d);
 
   const metrics = {};
 
