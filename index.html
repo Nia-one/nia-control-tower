@@ -2504,7 +2504,11 @@ console.table(rows);
         <div class="flex flex-col md:flex-row md:items-start justify-between gap-3 mb-4">
           <div class="min-w-0">
             <div class="text-[11px] uppercase tracking-widest text-nia-mute font-semibold mb-1">${esc(headers[titleIdx])}</div>
-            <div class="text-lg font-bold text-nia-ink leading-snug break-words">${esc(r[titleIdx])}</div>
+            <div class="text-lg font-bold text-nia-ink leading-snug break-words">${esc(
+  r[titleIdx] === "Priority Convert FONO funnel"
+    ? "Convert Fono Funnel"
+    : r[titleIdx]
+)}</div>
           </div>
           ${badgeIdx>=0 ? `<div class="shrink-0 max-w-[140px] text-right">${formattedCell(headers[badgeIdx], r[badgeIdx])}</div>` : ""}
         </div>
