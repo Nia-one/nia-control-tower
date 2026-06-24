@@ -3450,6 +3450,7 @@ function renderCockpit(){
 
     let value = r[current];
         if (String(r[metric]).trim() === "EBITDA gap") {
+    console.log("✅ EBITDA MATCH", r[gap]);
     value = r[gap];
 }
         console.log("Metric:", String(r[metric]).trim(), "Value:", value);
@@ -3471,6 +3472,7 @@ if (String(r[metric]).trim() === "B2B 500 nests CM") {
     value = livePriority("Recover collections").currentRate;
 }
         if (String(r[metric]).trim() === "Member Wallet") {
+    console.log("✅ MEMBER WALLET MATCH", value);
     value = Math.round(toNum(value)).toLocaleString();
 }
     return {
