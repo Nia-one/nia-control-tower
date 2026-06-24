@@ -3935,6 +3935,11 @@ function renderBanner(){
 }
 
 function render(){
+  console.log(
+    "RENDER:",
+    state.active,
+    CONFIG.tabs[state.active].label
+);
   renderBanner(); 
   renderBehaviorBoard();
   renderSummary(); 
