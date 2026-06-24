@@ -2497,9 +2497,13 @@ rows.forEach(r => {
     return "";
 }
 console.table(rows);
+  const isPriorityTab = CONFIG.tabs[state.active].label === "Priorities";
   
   return `<div class="divide-y divide-nia-hair/70 bg-white">
-    ${rows.map(r=>`
+    ${rows.map(r=>{
+  const p = isPriorityTab ? livePriority(r[titleIdx]) : null;
+
+  return `
       <article class="record-card p-5 md:p-6 hover:bg-nia-wash/60 transition-colors">
         <div class="flex flex-col md:flex-row md:items-start justify-between gap-3 mb-4">
           <div class="min-w-0">
@@ -2515,8 +2519,27 @@ console.table(rows);
         <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 mb-4">
           ${metricIdx.map(i=>`<div class="bg-nia-wash rounded-md p-3 min-w-0">
             <div class="text-[11px] text-nia-mute font-semibold mb-1 break-words">${esc(headers[i])}</div>
-            <div class="text-sm ${numCols[i] ? "tabular-nums font-bold text-nia-ink" : "font-semibold text-nia-body"} break-words">${headers[i] === "Ease Score"
-    ? Math.round(toNum(r[i]) || 0)
+            <div class="text-sm ${numCols[i] ? "tabular-nums font-bold text-nia-ink" : "font-semibold text-nia-body"} break-words">${(() => {
+  if (!isPriorityTab) {
+    return headers[i] === "Ease Score"
+      ? Math.round(toNum(r[i]) || 0)
+      : String(r[i]);
+  }
+
+  switch (headers[i]) {
+    case "Progress":
+      return `${p.done}% done / ${p.left}% left`;
+
+    case "Current":
+      return p.currentRate;
+
+    case "Gap":
+      return p.gapLabel || p.driver;
+
+    default:
+      return String(r[i]);
+  }
+})()}
     : String(r[i])}</div>
             
           </div>`).join("")}
