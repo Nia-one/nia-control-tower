@@ -3471,56 +3471,65 @@ Daily behavior: ${focus.behavior}
   }
 
 
-  if(tab==="Essentials Pilot"){
-    const dayCol     = readCol(d,["Day"]);
-    const phaseCol   = readCol(d,["Phase"]);
-    const penetCol   = readCol(d,["Penetration %"]);
-    const cumGmvCol  = readCol(d,["Cum GMV (₹)"]);
-    const contrCol   = readCol(d,["Contribution (₹)"]);
-    const delivCol   = readCol(d,["Delivery Success %"]);
-    const savedCol   = readCol(d,["₹ Saved/Member"]);
-    const statusCol  = readCol(d,["Status"]);
+ if (tab === "Essentials Pilot") {
 
-    const actual = rows.filter(r => String(r[statusCol]).toLowerCase() === "actual");
-    const latest = actual.length > 0 ? actual[actual.length - 1] : null;
-    const latestDay    = latest ? (toNum(latest[dayCol]) || 0) : 0;
-    const cumGmv       = latest ? (toNum(latest[cumGmvCol]) || 0) : 0;
-    const penetration  = latest ? (toNum(latest[penetCol]) || 0) : 0;
-    const delivery     = latest ? (toNum(latest[delivCol]) || 0) : 0;
-    const saved        = latest ? (toNum(latest[savedCol]) || 0) : 0;
-    const contribution = latest ? (toNum(latest[contrCol]) || 0) : 0;
+  const metricCol = readCol(d, ["Metric"]);
+  const valueCol  = readCol(d, ["Value"]);
+  const unitCol   = readCol(d, ["Unit"]);
 
-    host.innerHTML =
-      cockpitCard(
-        "Day " + latestDay + " · Live Signal",
-        penetration + "% penetration",
-        barRows([
-          {label:"Penetration %",    value: penetration + "%",   width: clamp(penetration / 12 * 100), alert: penetration < 5},
-          {label:"Delivery Success", value: delivery + "%",      width: clamp(delivery),               alert: delivery < 95},
-          {label:"Cum GMV",          value: "\u20b9" + inr(cumGmv), width: clamp(cumGmv / 50000 * 100)},
-          {label:"\u20b9 Saved/Member", value: "\u20b9" + inr(saved), width: clamp(saved / 100 * 100)}
-        ], "blue"),
-        "flask-conical"
-      ) +
-      cockpitCard(
-        "Contribution Trend",
-        contribution >= 0 ? "\u20b9" + inr(contribution) + " positive" : "\u20b9" + inr(Math.abs(contribution)) + " below zero",
-        '<div class="text-sm text-nia-mute leading-relaxed mb-2">Contribution turns positive only as order density rises and cost/order falls. That gap is the key pilot learning — not a failure.</div><div class="text-sm font-semibold">Day ' + latestDay + ' contribution: ₹' + inr(contribution) + '</div>',
-        "trending-up"
-      ) +
-      cockpitCard(
-        "Pilot Progress",
-        actual.length + " of 30 days actual",
-        barRows([
-          {label:"Days with actual data", value: actual.length + "/30",          width: clamp(actual.length / 30 * 100)},
-          {label:"Days remaining",        value: (30 - actual.length) + " left", width: clamp((30 - actual.length) / 30 * 100), alert: (30 - actual.length) < 5},
-          {label:"Current phase",         value: latest ? String(latest[phaseCol]) : "Not started", width: 50}
-        ], "blue"),
-        "calendar-check"
-      );
-    return;
-  }
+  const metrics = {};
 
+  rows.forEach(r => {
+    metrics[String(r[metricCol]).trim()] = {
+      value: r[valueCol],
+      unit: r[unitCol]
+    };
+  });
+
+  host.innerHTML =
+    cockpitCard(
+      "Essentials Pilot (MTD)",
+      "Live Summary",
+      `
+        <div class="space-y-3 text-sm">
+
+          <div class="flex justify-between">
+            <span>GMV</span>
+            <strong>₹${inr(metrics["GMV"]?.value || 0)}</strong>
+          </div>
+
+          <div class="flex justify-between">
+            <span>GM</span>
+            <strong>₹${inr(metrics["GM"]?.value || 0)}</strong>
+          </div>
+
+          <div class="flex justify-between">
+            <span>GM %</span>
+            <strong>${Number(metrics["GM %"]?.value || 0).toFixed(2)}%</strong>
+          </div>
+
+          <div class="flex justify-between">
+            <span>Contribution</span>
+            <strong>₹${inr(metrics["Contribution"]?.value || 0)}</strong>
+          </div>
+
+          <div class="flex justify-between">
+            <span>Total Essentials</span>
+            <strong>${inr(metrics["Total Essentials"]?.value || 0)} Units</strong>
+          </div>
+
+          <div class="flex justify-between">
+            <span>Delivery Success</span>
+            <strong>${metrics["Delivery Success"]?.value || 100}%</strong>
+          </div>
+
+        </div>
+      `,
+      "package"
+    );
+
+  return;
+}
   host.innerHTML="";
 }
 
