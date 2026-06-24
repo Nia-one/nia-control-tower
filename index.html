@@ -2321,23 +2321,41 @@ function aggregateOn(tabIdx,k){
       if(den!=null && den!==0){ n+=(toNum(r[ni])||0); dd+=den; }
     });return dd? (n/dd)*100:null;
   }
-  if(k.agg==="read"){
+if (k.agg === "read") {
 
-    const ci = colIndex(H, k.col);
+  // Special handling for Essentials Pilot (Metric | Value | Unit format)
+  if (k.tab === "Essentials Pilot") {
 
-    if(ci < 0) return null;
+    const metricCol = colIndex(H, "Metric");
+    const valueCol  = colIndex(H, "Value");
 
-    // Read first non-empty value from the column
-    for(const r of R){
+    if (metricCol >= 0 && valueCol >= 0) {
 
-        const v = toNum(r[ci]);
+      for (const r of R) {
 
-        if(v != null) return v;
+        if (String(r[metricCol]).trim() === k.col) {
+          return toNum(r[valueCol]);
+        }
+
+      }
+
     }
 
     return null;
-}
-  if(k.agg==="count"){ return R.length; }
+  }
+
+  // Default behaviour for all other tabs
+  const ci = colIndex(H, k.col);
+
+  if (ci < 0) return null;
+
+  for (const r of R) {
+    const v = toNum(r[ci]);
+    if (v != null) return v;
+  }
+
+  return null;
+}  if(k.agg==="count"){ return R.length; }
   return null;
 }
 function inr(n){
