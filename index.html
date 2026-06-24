@@ -3563,6 +3563,32 @@ Daily behavior: ${focus.behavior}
   if(tab==="Enterprise"){
     const workstream=readCol(d,["Workstream"]);
     const current=readCol(d,["Current"]);
+    // Read live B2B values from CM Actions instead of Enterprise tab
+const cmIndex = tabIndexByLabel("CM Actions");
+const cmData = state.data[cmIndex];
+
+let livePlan = 0;
+let liveRealized = 0;
+let liveGap = 0;
+let liveAch = 0;
+
+if (cmData && cmData.rows) {
+  const drv = readCol(cmData, ["Driver"]);
+  const planCol = readCol(cmData, ["Plan (₹L)"]);
+  const realCol = readCol(cmData, ["Realized (₹L)"]);
+  const gapCol = readCol(cmData, ["Gap (₹L)"]);
+
+  const row = cmData.rows.find(r =>
+    String(r[drv]).trim().toLowerCase() === "b2b 500 new nests"
+  );
+
+  if (row) {
+    livePlan = toNum(row[planCol]) || 0;
+    liveRealized = toNum(row[realCol]) || 0;
+    liveGap = toNum(row[gapCol]) || Math.max(livePlan - liveRealized, 0);
+    liveAch = livePlan ? (liveRealized / livePlan * 100) : 0;
+  }
+}
     const target=readCol(d,["Target (₹L)"]);
     const realized=readCol(d,["Realized (₹L)"]);
     const gap=readCol(d,["Gap (₹L)"]);
@@ -3571,7 +3597,19 @@ Daily behavior: ${focus.behavior}
     const billingRows=rows.filter(r=>String(r[current]).includes("June billing") || String(r[current]).includes("estimated billing"));
     const maxBilling=Math.max(...billingRows.map(r=>toNum(r[realized])||0),1);
     host.innerHTML =
-      cockpitCard("B2B Close Rate", fmt(toNum(b2b?.[ach])||0,"pct"), `<div class="h-2 bg-nia-panel rounded-full overflow-hidden mb-4"><div class="h-full bg-nia-clay rounded-full" style="width:${clamp(toNum(b2b?.[ach])||0)}%"></div></div><div class="text-sm text-nia-mute">${esc(b2b?.[gap] || "1.74")}L CM gap against the June B2B target.</div>`, "briefcase-business") +
+ cockpitCard(
+  "B2B Close Rate",
+  fmt(liveAch, "pct"),
+  `<div class="h-2 bg-nia-panel rounded-full overflow-hidden mb-4">
+      <div class="h-full bg-nia-clay rounded-full"
+           style="width:${clamp(liveAch)}%">
+      </div>
+   </div>
+   <div class="text-sm text-nia-mute">
+      ${inr(Math.round(liveGap * 100) / 100)}L CM gap against the June B2B target.
+   </div>`,
+  "briefcase-business"
+)
       cockpitCard("Enterprise Base", "38.97L", barRows(billingRows.map(r=>({label:r[workstream], value:`${inr(toNum(r[realized])||0)}L`, width:clamp((toNum(r[realized])||0)/maxBilling*100)})), "blue"), "chart-column") +
       cockpitCard("Behavior Rule", "Close Cadence", `<div class="text-sm text-nia-mute leading-relaxed">Enterprise should not be a passive billing report. Every account needs target nests, corridor, blocker, next meeting, and close date.</div>`, "calendar-check");
     return;
