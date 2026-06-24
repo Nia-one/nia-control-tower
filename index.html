@@ -2497,28 +2497,7 @@ rows.forEach(r => {
     return "";
 }
 console.table(rows);
-  if (CONFIG.tabs[state.active].label === "Priorities") {
-  rows = rows.map(r => {
-    const p = livePriority(r[0]);
-
-    if (!p) return r;
-
-    const row = [...r];
-
-    // Progress
-    row[1] = `${p.done}% done / ${p.left}% left`;
-
-    // Current
-    row[2] = p.currentRate;
-
-    // Gap
-    row[4] = p.gapLabel;
-
-    return row;
-  });
-
-  console.table(rows);
-}
+ 
   
   return `<div class="divide-y divide-nia-hair/70 bg-white">
     ${rows.map(r=>`
