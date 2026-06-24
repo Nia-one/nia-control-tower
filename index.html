@@ -3483,8 +3483,8 @@ Daily behavior: ${focus.behavior}
     rows.forEach(r=>{ const key=r[primary]||"Other"; byDriver[key]=(byDriver[key]||0)+1; });
     host.innerHTML =
       cockpitCard("Highest Drag Entity", esc(top?.[entity] || "–"), `<div class="text-sm text-nia-mute leading-relaxed">${esc(top?.[theatre] || "")} · score ${esc(top?.[score] || "–")}. This is the first entity to discuss in the daily drag review.</div>`, "siren") +
-      cockpitCard("Drag Mix", `${rows.length} entities`, barRows(Object.entries(byDriver).map(([label,value])=>({label,value:inr(value),width:clamp(value/rows.length*100),alert:label!=="Collections"})), "red"), "layers") +
-(() => {
++      cockpitCard("Drag Mix", `${rows.length} entities`, barRows(Object.entries(byDriver).map(([label,value])=>({label,value:inr(value),width:clamp(value/rows.length*100),alert:label!=="Collections"})), "red"), "layers") +
++(() => {
 
   const drag = state.data["Drag Scores"];
 
