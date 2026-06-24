@@ -1914,8 +1914,24 @@ const CONFIG = {
 
   summary: [
     { tab:"DOR",  label:"EBITDA gap (₹L)",  agg:"read",  col:"Gap",  fmt:"num",  alertIfAbove:0,  trend:"down"},
-    { tab:"CM Actions", label:"CM plan achieved", agg:"ratio", num:"Realized (₹L)", den:"Plan (₹L)", fmt:"pct", target:100, trend:"up" },
-    { tab:"CM Actions", label:"CM gap remaining (₹L)", agg:"sum", col:"Gap (₹L)", fmt:"num", alertIfAbove:0, trend:"down" },
+    {
+  tab:"CM Actions",
+  label:"CM Achieved",
+  agg:"total",
+  col:"Realized (₹L)",
+  fmt:"num",
+  targetCol:"Plan (₹L)",
+  trend:"up"
+},
+  {
+  tab:"CM Actions",
+  label:"CM Gap Remaining",
+  agg:"total",
+  col:"Gap (₹L)",
+  fmt:"num",
+  targetCol:"Plan (₹L)",
+  trend:"down"
+},
     { tab:"Studios", label:"Active occupancy", agg:"ratio", num:"Occupied", den:"Contracted", fmt:"pct", target:95, trend:"up" },
     
     { tab:"FONO", label:"FONO potential nests", agg:"sum", col:"Visited", fmt:"num", trend:"up" },
@@ -2310,7 +2326,21 @@ function toNum(v){ const n=parseFloat(String(v).replace(/[^0-9.\-]/g,"")); retur
 function aggregateOn(tabIdx,k){
   const d=state.data[tabIdx]; if(!d) return null;
   const H=d.headers, R=d.rows;
-  if(k.agg==="sum"){ const ci=colIndex(H,k.col); return R.reduce((a,r)=>a+(toNum(r[ci])||0),0); }
+  if(k.agg==="sum"){
+  const ci=colIndex(H,k.col);
+  return R.reduce((a,r)=>a+(toNum(r[ci])||0),0);
+}
+
+if(k.agg==="total"){
+  const ci=colIndex(H,k.col);
+  return R.reduce((a,r)=>a+(toNum(r[ci])||0),0);
+}
+
+if(k.agg==="avg"){
+  const ci=colIndex(H,k.col);
+  const v=R.map(r=>toNum(r[ci])).filter(x=>x!=null);
+  return v.length ? v.reduce((a,b)=>a+b,0)/v.length : null;
+}
   if(k.agg==="avg"){ const ci=colIndex(H,k.col); const v=R.map(r=>toNum(r[ci])).filter(x=>x!=null); return v.length? v.reduce((a,b)=>a+b,0)/v.length:null; }
   if(k.agg==="wavg"){ const ci=colIndex(H,k.col), wi=colIndex(H,k.weight); let n=0,w=0; R.forEach(r=>{const x=toNum(r[ci]),y=toNum(r[wi]); if(x!=null&&y!=null){n+=x*y;w+=y;}}); return w? n/w:null; }
   if(k.agg==="ratio"){
@@ -2598,6 +2628,16 @@ function renderSummary(){
   (CONFIG.summary||[]).forEach((k, idx)=>{
     const ti=tabIndexByLabel(k.tab);
     const val= k.agg==="static" ? k.value : (ti>=0 ? aggregateOn(ti,k) : null);
+    let planTotal = null;
+
+if (k.tab === "CM Actions") {
+
+  planTotal = aggregateOn(ti, {
+    agg: "total",
+    col: "Plan (₹L)"
+  });
+
+}
     let isAlert=false;
     
     if(k.alertIfAbove!=null && val!=null && val>k.alertIfAbove) isAlert=true;
@@ -2632,20 +2672,60 @@ function renderSummary(){
     }
 
     let progressHtml = '';
-    if(k.fmt === 'pct' && val != null) {
-      const colorClass = isAlert ? 'bg-nia-clay' : 'bg-nia-blue';
-      const width = Math.min(Math.max(val, 0), 100);
-      progressHtml = `
-        <div class="w-full bg-nia-panel h-1.5 mt-5 overflow-hidden">
-          <div class="${colorClass} h-1.5 transition-all duration-1000 ease-out" style="width: ${width}%"></div>
-        </div>
-      `;
-    }
 
-    let qualHtml = '';
+let width = null;
+
+if (k.fmt === "pct" && val != null) {
+
+  width = Math.min(Math.max(val, 0), 100);
+
+}
+
+// CM Cards (Achievement & Gap)
+if (k.tab === "CM Actions" && planTotal && val != null) {
+
+  width = (val / planTotal) * 100;
+
+}
+
+if (width != null) {
+
+  let colorClass = "bg-nia-blue";
+
+  // CM Gap card should be red
+  if (
+      k.tab === "CM Actions" &&
+      k.label === "CM Gap Remaining"
+  ) {
+      colorClass = "bg-nia-clay";
+  }
+
+  // Other alert cards
+  else if (isAlert) {
+      colorClass = "bg-nia-clay";
+  }
+
+  progressHtml = `
+    <div class="w-full bg-nia-panel h-1.5 mt-5 overflow-hidden">
+      <div class="${colorClass} h-1.5 transition-all duration-1000 ease-out"
+           style="width:${Math.min(width,100)}%">
+      </div>
+    </div>
+  `;
+
+}    let qualHtml = '';
     if(k.target!=null) {
       qualHtml = `<div class="text-xs font-medium text-nia-mute mt-3 flex justify-between items-center">
-        <span>Target: <span class="text-nia-body font-semibold">${k.target}${k.fmt==="pct"?"%":""}</span></span>
+       <span>
+  Target:
+  <span class="text-nia-body font-semibold">
+    ${
+      k.tab === "CM Actions" && planTotal
+        ? `${planTotal.toFixed(2)} L`
+        : `${k.target}${k.fmt==="pct"?"%":""}`
+    }
+  </span>
+</span>
         <span class="inline-flex items-center gap-1 ${isAlert ? "text-nia-clay" : "text-nia-blue"}"><i data-lucide="${trend.icon}" class="w-4 h-4"></i> ${esc(trend.dir)}</span>
       </div>`;
     } else {
@@ -2663,10 +2743,52 @@ function renderSummary(){
         </span>
       </div>
       <div class="text-4xl font-bold tracking-tight ${isAlert ? 'text-nia-clay' : 'text-nia-ink'}">
-        ${Math.round(val)}
-      </div>
-      ${progressHtml}
-      ${qualHtml}
+  ${
+    val == null
+      ? "—"
+      : k.tab === "CM Actions"
+        ? `${Number(val).toFixed(2)} L`
+        : k.fmt === "pct"
+          ? `${Math.round(val)}%`
+          : k.fmt === "num"
+            ? inr(Math.round(val))
+            : Math.round(val)
+  }
+</div>
+     ${progressHtml}
+
+${
+  k.tab === "CM Actions" && k.label === "CM plan achieved"
+    ? `<div class="text-sm text-nia-mute mt-3">
+         Achievement: <strong>${Math.round(val)}%</strong>
+       </div>`
+    : ""
+}
+
+${
+  k.tab === "CM Actions" && k.label === "CM gap remaining (₹L)"
+    ? `<div class="text-sm text-nia-mute mt-3">
+         Gap: <strong>${Math.round((val/32.2)*100)}%</strong>
+       </div>`
+    : ""
+}
+${
+  k.tab === "CM Actions" && planTotal && val != null
+  ? `
+    <div class="text-sm font-semibold mt-3 ${
+      k.label === "CM Achieved"
+        ? "text-green-700"
+        : "text-red-700"
+    }">
+      ${
+        k.label === "CM Achieved"
+          ? `🟢 ${((val / planTotal) * 100).toFixed(1)}% Achieved`
+          : `🔴 ${((val / planTotal) * 100).toFixed(1)}% Remaining`
+      }
+    </div>
+  `
+  : ""
+}${qualHtml}
       ${canOpen ? `<div class="mt-4 pt-4 border-t border-nia-hair text-xs font-bold text-nia-blue flex items-center justify-between gap-2">
         <span>Open ${esc(k.tab)}</span>
         <i data-lucide="arrow-right" class="w-4 h-4 shrink-0"></i>
