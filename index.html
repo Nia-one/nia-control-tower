@@ -4443,6 +4443,9 @@ rows.forEach(r => {
 });
     const worst=rows.slice().sort((a,b)=>(toNum(a[net])||0)-(toNum(b[net])||0))[0];
     host.innerHTML =
+      cockpitCard(
+    "Net Movement (Month)",
+    `${inr(totalNet)}`,
 ${Object.entries(theatreSummary)
 .sort((a,b)=>b[1].net-a[1].net)
 .map(([t,v])=>`
@@ -4475,7 +4478,7 @@ ${Object.entries(theatreSummary)
 
 </div>
 `).join("")} +
-      cockpitCard("Largest Leak", esc(worst?.[studio] || "–"), `<div class="text-sm text-nia-mute leading-relaxed">${esc(worst?.[theatre] || "")} · ${esc(worst?.[ci] || "0")} check-ins / ${esc(worst?.[co] || "0")} check-outs this month. This studio is losing the most bodies, not just revenue.</div>`, "log-out") +
+`, "arrows-up-down")      cockpitCard("Largest Leak", esc(worst?.[studio] || "–"), `<div class="text-sm text-nia-mute leading-relaxed">${esc(worst?.[theatre] || "")} · ${esc(worst?.[ci] || "0")} check-ins / ${esc(worst?.[co] || "0")} check-outs this month. This studio is losing the most bodies, not just revenue.</div>`, "log-out") +
       cockpitCard("Behavior Rule", "Retention before refill", `<div class="text-sm text-nia-mute leading-relaxed">If net movement is negative, first diagnose why people are leaving, then refill. Otherwise demand creation leaks out the back door.</div>`, "shield-alert");
     return;
   }
