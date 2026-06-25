@@ -2827,16 +2827,18 @@ if (width != null) {
       </div>
       <div class="text-4xl font-bold tracking-tight ${isAlert ? 'text-nia-clay' : 'text-nia-ink'}">
   ${
-    val == null
-      ? "—"
-      : k.tab === "CM Actions"
-        ? fmt(val,"lakhs")
+  val == null
+    ? "—"
+    : k.fmt === "lakhs"
+      ? fmt(val,"lakhs")
+      : k.fmt === "rupees_to_lakhs"
+        ? fmt(val,"rupees_to_lakhs")
         : k.fmt === "pct"
           ? `${Math.round(val)}%`
           : k.fmt === "num"
             ? inr(Math.round(val))
             : Math.round(val)
-  }
+}
 </div>
      ${progressHtml}
 
