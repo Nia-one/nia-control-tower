@@ -2401,7 +2401,23 @@ function inr(n){
   if(rest) last3=","+last3; rest=rest.replace(/\B(?=(\d{2})+(?!\d))/g,",");
   let out=rest+last3; if(f) out+="."+f; return (neg?"-":"")+out;
 }
-function fmt(v,f){ if(v==null) return "–"; if(f==="pct") return (Math.round(v*10)/10)+"%"; return inr(v); }
+function fmt(v,f){
+  if(v==null) return "—";
+
+  if(f==="pct"){
+    return (Math.round(v*10)/10) + "%";
+  }
+
+  if(f==="lakhs"){
+    return Number(v).toFixed(2) + " L";
+}
+
+if(f==="rupees_to_lakhs"){
+    return (Number(v)/100000).toFixed(2) + " L";
+}
+
+  return inr(v);
+}
 function clamp(n,min=0,max=100){ return Math.min(Math.max(n,min),max); }
 function esc(v){
   return String(v ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -2815,7 +2831,7 @@ if (width != null) {
     val == null
       ? "—"
       : k.tab === "CM Actions"
-        ? `${Number(val).toFixed(2)} L`
+        ? fmt(val,"lakhs")
         : k.fmt === "pct"
           ? `${Math.round(val)}%`
           : k.fmt === "num"
@@ -3031,17 +3047,18 @@ console.log(sd.headers);
           const gap      = gapCol != null && b2b[gapCol] !== "" ? (toNum(b2b[gapCol]) || 0)
                           : Math.max(plan - realized, 0);
           const achPct   = plan ? Math.round(realized / plan * 100) : 0;
-          base.currentRate = (Math.round(realized * 100) / 100) + "L realised";
+          base.currentRate = fmt(realized, "lakhs") + " realised";
           base.driver      = "Target For 570 Nest";
-          base.gapLabel    = (Math.round(gap * 100) / 100) + "L gap";
+          base.gapLabel = fmt(gap, "lakhs") + " gap";
           base.done = clamp(achPct);
           base.left = 100 - base.done;
           // Daily CM ask to close the gap by 30 June.
           const today = new Date();
           const target = new Date(today.getFullYear(), 5, 30);
           const daysLeft = Math.ceil((target - new Date(today.getFullYear(), today.getMonth(), today.getDate())) / 86400000);
-          base.askRate = daysLeft >= 1 ? (Math.round(gap / daysLeft * 100) / 100) + "L/day"
-                       : (gap > 0 ? (Math.round(gap * 100) / 100) + "L overdue" : "target met");
+          base.askRate = daysLeft >= 1
+   ? fmt(gap / daysLeft, "lakhs") + "/day"
+: (gap > 0 ? fmt(gap, "lakhs") + " overdue" : "target met");
         }
       }
     }
@@ -3109,20 +3126,20 @@ if(name === "Work"){
       base.done = clamp(Math.round(realized/plan*100));
       base.left = 100-base.done;
 
-      base.currentRate = realized + "L realised";
+      base.currentRate = fmt(realized, "lakhs") + " realised";
       base.driver = "Fono + Flipkart";
       console.log("WORK DRIVER =", base.driver);
-      return base;
-      base.gapLabel = gap + "L gap";
-
+      
+      base.gapLabel = fmt(gap, "lakhs") + " gap";
+return base;
       const today = new Date();
       const target = new Date(today.getFullYear(),5,30);
       const daysLeft = Math.ceil((target-new Date(today.getFullYear(),today.getMonth(),today.getDate()))/86400000);
 
       base.askRate =
         daysLeft>0
-          ? (Math.round(gap/daysLeft*100)/100)+"L/day"
-          : (gap>0 ? gap+"L overdue" : "Target met");
+          ? fmt(gap/daysLeft,"lakhs") + "/day"
+          : (gap>0 ? fmt(gap,"lakhs") + " overdue" : "Target met");
     }
   }
 }
@@ -3253,11 +3270,11 @@ if(name === "Work"){
 
       // Current Rate
       base.currentRate =
-        realized.toFixed(2) + "L realised";
+        fmt(realized,"lakhs") + " realised";
 
       // Ask Rate (Target)
       base.askRate =
-        plan.toFixed(2) + "L target";
+      fmt(plan,"lakhs") + " target";
 
       // Driver
       base.driver = row[driverCol];
@@ -3266,7 +3283,7 @@ if(name === "Work"){
       const gap = Math.max(plan - realized,0);
 
       base.gapLabel =
-        gap.toFixed(2) + "L gap";
+fmt(gap,"lakhs") + " gap";
     }
   }
 }
@@ -3310,8 +3327,8 @@ if(name === "Work"){
       if (!p) return;
       if (metric === "Collections recovery") {
 
-    r[currentCol] = Math.round(toNum(p.currentRate)).toLocaleString();
-    r[targetCol] = "59.9L target";
+    r[currentCol] = fmt(toNum(p.currentRate), "lakhs");
+   r[targetCol] = fmt(59.9, "lakhs") + " target";
     r[gapCol] = p.gapLabel;
     r[doneCol] = p.done + "%";
     r[leftCol] = p.left + "%";
@@ -3325,7 +3342,7 @@ if(name === "Work"){
 if (metric === "B2B 500 nests CM") {
 
     r[currentCol] = p.currentRate;
-    r[targetCol] = "2.28L target";
+    r[targetCol] = fmt(2.28, "lakhs") + " target";
     r[gapCol] = p.gapLabel;
     r[doneCol] = p.done + "%";
     r[leftCol] = p.left + "%";
@@ -3616,7 +3633,7 @@ if (String(r[metric]).trim() === "B2B 500 nests CM") {
 
 if (String(r[metric]).trim() === "Member Wallet") {
     console.log("✅ MEMBER WALLET MATCH", value);
-    value = Math.round(toNum(value)).toLocaleString();
+    value = fmt(toNum(value), "rupees_to_lakhs");
 }
     return {
         label: r[metric],
