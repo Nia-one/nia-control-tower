@@ -2819,10 +2819,10 @@ if (width != null) {
   Target:
   <span class="text-nia-body font-semibold">
     ${
-      k.tab === "CM Actions" && planTotal
-        ? `${planTotal.toFixed(2)} L`
-        : `${k.target}${k.fmt==="pct"?"%":""}`
-    }
+  k.tab === "CM Actions" && planTotal
+    ? fmt(planTotal, "lakhs")
+    : fmt(k.target, k.fmt)
+}
   </span>
 </span>
         <span class="inline-flex items-center gap-1 ${isAlert ? "text-nia-clay" : "text-nia-blue"}"><i data-lucide="${trend.icon}" class="w-4 h-4"></i> ${esc(trend.dir)}</span>
