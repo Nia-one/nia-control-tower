@@ -3977,7 +3977,23 @@ Daily behavior: ${focus.behavior}
 });
     const maxBilling=Math.max(...billingRows.map(r=>toNum(r[realized])||0),1);
     host.innerHTML =
-      cockpitCard("B2B Close Rate", fmt(toNum(b2b?.[ach])||0,"pct"), `<div class="h-2 bg-nia-panel rounded-full overflow-hidden mb-4"><div class="h-full bg-nia-clay rounded-full" style="width:${clamp(toNum(b2b?.[ach])||0)}%"></div></div><div class="text-sm text-nia-mute">${esc(b2b?.[gap] || "1.74")}L CM gap against the June B2B target.</div>`, "briefcase-business") +
+      cockpitCard("B2B Close Rate", fmt(toNum(b2b?.[ach])||0,"pct"), `
+<div class="text-sm text-nia-mute mb-2">
+  Realized <strong>${esc(b2b?.[realized] || "0")}L</strong> /
+  Target <strong>${esc(b2b?.[target] || "0")}L</strong>
+</div>
+
+<div class="h-2 bg-nia-panel rounded-full overflow-hidden mb-3">
+  <div class="h-full bg-nia-clay rounded-full"
+       style="width:${clamp(toNum(b2b?.[ach]) || 0)}%">
+  </div>
+</div>
+
+<div class="flex justify-between text-sm font-semibold">
+  <span class="text-green-700">${fmt(toNum(b2b?.[ach]) || 0,"pct")} Done</span>
+  <span class="text-red-700">${fmt(100-(toNum(b2b?.[ach]) || 0),"pct")} Left</span>
+</div>
+`, "briefcase-business") +
       cockpitCard("Enterprise Base", "38.97L", barRows(billingRows.map(r=>({label:r[workstream], value:`${inr(toNum(r[realized])||0)}L`, width:clamp((toNum(r[realized])||0)/maxBilling*100)})), "blue"), "chart-column") +
       cockpitCard("Behavior Rule", "Close Cadence", `<div class="text-sm text-nia-mute leading-relaxed">Enterprise should not be a passive billing report. Every account needs target nests, corridor, blocker, next meeting, and close date.</div>`, "calendar-check");
     return;
@@ -4019,10 +4035,38 @@ console.log("nests column index =", nests);
     const totalDropped     = rows.reduce((a,r)=>a+(toNum(r[droppedCol])||0),0);
     const totalNests       = rows.reduce((a,r)=>a+(toNum(r[totalCol])||0),0);
     host.innerHTML =
-      cockpitCard("Live vs Target", inr(totalLive) + " / 3,500",
-        '<div class="h-2 bg-nia-panel rounded-full overflow-hidden mb-4"><div class="h-full bg-nia-clay rounded-full" style="width:' + clamp(totalLive/3500*100) + '%"></div></div>' +
-        '<div class="text-sm text-nia-mute">' + (3500-totalLive) + ' nests still need to become live or equivalent CM impact.</div>',
-        "flag") +
+      cockpitCard("Live vs Target", fmt(totalLive/3500*100,"pct"),
+  `
+<div class="space-y-1 text-sm mb-3">
+
+  <div class="flex justify-between">
+    <span class="text-nia-mute">Live</span>
+    <strong>${inr(totalLive)}</strong>
+  </div>
+
+  <div class="flex justify-between">
+    <span class="text-nia-mute">Target</span>
+    <strong>3,500</strong>
+  </div>
+
+</div>
+
+<div class="h-2 bg-nia-panel rounded-full overflow-hidden mb-3">
+  <div class="h-full bg-nia-clay rounded-full"
+       style="width:${clamp(totalLive/3500*100)}%">
+  </div>
+</div>
+
+<div class="flex justify-between text-sm font-semibold">
+  <span class="text-green-700">
+    ${fmt(totalLive/3500*100,"pct")} Done
+  </span>
+
+  <span class="text-red-700">
+    ${fmt(100-(totalLive/3500*100),"pct")} Left
+  </span>
+</div>
+`      "flag") +
       cockpitCard("Stage Bottleneck", inr(totalVisited) + " visited",
         barRows([
   {label:"Visited",           value:inr(totalVisited),     width:clamp(totalVisited/totalNests*100),     alert:true},
@@ -4049,7 +4093,43 @@ console.log("nests column index =", nests);
     const byTheatre={};
     rows.forEach(r=>{ const key=r[theatre]||"Other"; byTheatre[key]=(byTheatre[key]||0)+(toNum(r[due])||0); });
     host.innerHTML =
-      cockpitCard("Top Due Pool", `${inr(totalDue)}L`, barRows(Object.entries(byTheatre).sort((a,b)=>b[1]-a[1]).map(([label,value])=>({label,value:`${inr(value)}L`,width:clamp(value/(totalDue||1)*100),alert:value>2})), "red"), "hand-coins") +
+cockpitCard(
+  "Collection Recovery",
+  fmt(100 - (totalDue / (totalDue + rows.reduce((a,r)=>a+(toNum(r[score])||0),0)) * 100), "pct"),
+  `
+<div class="space-y-1 text-sm mb-3">
+
+  <div class="flex justify-between">
+    <span class="text-nia-mute">Recovered</span>
+    <strong>${fmt(rows.reduce((a,r)=>a+(toNum(r[score])||0),0),"lakhs")}L</strong>
+  </div>
+
+  <div class="flex justify-between">
+    <span class="text-nia-mute">Target</span>
+    <strong>${fmt(totalDue + rows.reduce((a,r)=>a+(toNum(r[score])||0),0),"lakhs")}L</strong>
+  </div>
+
+</div>
+
+<div class="h-2 bg-nia-panel rounded-full overflow-hidden mb-3">
+  <div
+    class="h-full bg-nia-clay rounded-full"
+    style="width:${clamp(100 - (totalDue/(totalDue + rows.reduce((a,r)=>a+(toNum(r[score])||0),0))*100))}%">
+  </div>
+</div>
+
+<div class="flex justify-between text-sm font-semibold">
+  <span class="text-green-700">
+    ${fmt(100 - (totalDue/(totalDue + rows.reduce((a,r)=>a+(toNum(r[score])||0),0))*100),"pct")} Done
+  </span>
+
+  <span class="text-red-700">
+    ${fmt(totalDue/(totalDue + rows.reduce((a,r)=>a+(toNum(r[score])||0),0))*100,"pct")} Left
+  </span>
+</div>
+`,
+  "hand-coins"
+) +
       cockpitCard("Worst Studio", esc(worst?.[studio] || "–"), `<div class="text-sm text-nia-mute leading-relaxed">${esc(worst?.[theatre] || "")} · due ${esc(worst?.[due] || "–")}L · collection ${esc(worst?.[pct] || "–")}%. Treat this as a named recovery action, not a generic reminder.</div>`, "alert-triangle") +
       cockpitCard("Score Rule", "Due + pace", `<div class="text-sm text-nia-mute leading-relaxed">Collection score punishes large dues, zero recent member-fee pace, pending subhead, and review count. Source-name mismatches remain a data-quality drag.</div>`, "receipt-text");
     return;
@@ -4100,7 +4180,37 @@ console.log("nests column index =", nests);
     const totalEss=rows.reduce((a,r)=>a+(toNum(r[essentialsRev])||0),0);
     const best=rows.slice().sort((a,b)=>(toNum(b[attach])||0)-(toNum(a[attach])||0))[0];
     host.innerHTML =
-      cockpitCard("Wallet Attach", fmt(totalStudio ? totalEss/totalStudio*100 : 0,"pct"), barRows(rows.map(r=>({label:r[theatre], value:`${fmt(toNum(r[attach]),"pct")}`, width:clamp((toNum(r[attach])||0)/4.3*100), alert:(toNum(r[attach])||0)<3.9})), "red"), "shopping-basket") +
+      cockpitCard("Wallet Attach", fmt(totalStudio ? totalEss/totalStudio*100 : 0,"pct"), `
+<div class="space-y-1 text-sm mb-3">
+
+  <div class="flex justify-between">
+    <span class="text-nia-mute">Realized</span>
+    <strong>${fmt(totalEss,"lakhs")}L</strong>
+  </div>
+
+  <div class="flex justify-between">
+    <span class="text-nia-mute">Target</span>
+    <strong>${fmt(totalStudio*0.10,"lakhs")}L</strong>
+  </div>
+
+</div>
+
+<div class="h-2 bg-nia-panel rounded-full overflow-hidden mb-3">
+  <div class="h-full bg-nia-clay rounded-full"
+       style="width:${clamp(totalStudio ? totalEss/(totalStudio*0.10)*100 : 0)}%">
+  </div>
+</div>
+
+<div class="flex justify-between text-sm font-semibold">
+  <span class="text-green-700">
+    ${fmt(totalStudio ? totalEss/(totalStudio*0.10)*100 : 0,"pct")} Done
+  </span>
+
+  <span class="text-red-700">
+    ${fmt(100-(totalStudio ? totalEss/(totalStudio*0.10)*100 : 0),"pct")} Left
+  </span>
+</div>
+`,, , "shopping-basket") +
       cockpitCard("Member Base Touched", inr(rows.reduce((a,r)=>a+(toNum(r[members])||0),0)), barRows(rows.map(r=>({label:r[theatre], value:inr(toNum(r[members])||0), width:clamp((toNum(r[members])||0)/(Math.max(...rows.map(x=>toNum(x[members])||0),1))*100)}))), "users") +
       cockpitCard("Copy Playbook", esc(best?.[theatre] || "–"), `<div class="text-sm text-nia-mute leading-relaxed">Wellington is already above the attach hurdle. Turn its check-in script into the default bundle motion across Rajputana and Deccan.</div>`, "copy-check");
     return;
