@@ -3546,7 +3546,16 @@ function renderCockpit(){
     host.innerHTML =
       cockpitCard("Daily Ops Review", `${inputCriticalRows.length} red inputs`, barRows(rows.map(r => {
 
-    let value = currentValue;
+    host.innerHTML =
+  cockpitCard("Daily Ops Review", `${inputCriticalRows.length} red inputs`, barRows(rows.map(r => {
+
+    let value = r[current];
+
+    console.log(
+        "Compare:",
+        JSON.stringify(String(r[metric]).trim()),
+        JSON.stringify("EBITDA gap")
+    );
         console.log(
     "Compare:",
     JSON.stringify(String(r[metric]).trim()),
