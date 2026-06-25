@@ -2572,6 +2572,12 @@ if (CONFIG.tabs[state.active].label === "Priorities") {
         row[1] = p.done + "% done / " + p.left + "% left";
         row[2] = p.currentRate;
         row[4] = p.gapLabel;
+      // Update live risk based on % left
+row[5] =
+    p.left === 0 ? "Completed" :
+    p.left <= 20 ? "On Track" :
+    p.left <= 50 ? "Watch" :
+    "Critical";
 
         return row;
 
