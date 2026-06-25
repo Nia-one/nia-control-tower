@@ -2457,6 +2457,18 @@ case "workstreams":
   }
 }
 function clamp(n,min=0,max=100){ return Math.min(Math.max(n,min),max); }
+  function progressColor(value){
+
+  value = Number(value) || 0;
+
+  if(value >= 90) return "bg-green-600";
+
+  if(value >= 70) return "bg-amber-500";
+
+  return "bg-red-500";
+
+}
+  
 function esc(v){
   return String(v ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -2673,6 +2685,54 @@ function cockpitCard(title, value, body, icon="activity"){
     ${body}
   </div>`;
 }
+  /* ================= KPI BODY HELPER ================= */
+
+function kpiBody(currentLabel,currentValue,targetLabel,targetValue,percent){
+
+  percent = Number(percent) || 0;
+
+  return `
+
+<div class="space-y-1 text-sm mb-3">
+
+  <div class="flex justify-between">
+    <span class="text-nia-mute">${esc(currentLabel)}</span>
+    <strong>${esc(currentValue)}</strong>
+  </div>
+
+  <div class="flex justify-between">
+    <span class="text-nia-mute">${esc(targetLabel)}</span>
+    <strong>${esc(targetValue)}</strong>
+  </div>
+
+</div>
+
+<div class="h-2 bg-nia-panel rounded-full overflow-hidden mb-3">
+
+<div
+class="h-full ${progressColor(percent)} rounded-full"
+style="width:${clamp(percent)}%">
+</div>
+
+</div>
+
+<div class="flex justify-between text-sm font-semibold">
+
+<span class="text-green-700">
+${fmt(percent,"pct")} Done
+</span>
+
+<span class="text-red-700">
+${fmt(100-percent,"pct")} Left
+</span>
+
+</div>
+
+`;
+
+}
+
+/* ================= END KPI BODY HELPER ================= */
 function barRows(items, tone="blue"){
   const color = tone==="red" ? "bg-nia-clay" : tone==="soft" ? "bg-nia-bluesoft" : "bg-nia-blue";
   return `<div class="space-y-3">${items.map(item => `
@@ -3708,7 +3768,59 @@ function renderCockpit(){
     const firstCritical=inputCriticalRows[0] || criticalRows[0] || rows[0];
     const series=firstCritical ? wkCols.map(ci=>firstCritical[ci]) : [];
     host.innerHTML =
-      cockpitCard("Daily Ops Review", `${inputCriticalRows.length} red inputs`, barRows(rows.map(r => {
+      cockpitCard(
+  "Daily Ops Review",
+  `${inputCriticalRows.length} Critical`,
+  `
+<div class="space-y-2">
+
+<div class="flex justify-between">
+<span class="text-nia-mute">Critical Inputs</span>
+<strong class="text-red-700">${inputCriticalRows.length}</strong>
+</div>
+
+<div class="flex justify-between">
+<span class="text-nia-mute">Watch Items</span>
+<strong class="text-amber-600">${rows.filter(r=>String(r[status]).toLowerCase().includes("watch")).length}</strong>
+</div>
+
+<div class="flex justify-between">
+<span class="text-nia-mute">Healthy</span>
+<strong class="text-green-700">${rows.filter(r=>String(r[status]).toLowerCase().includes("good")).length}</strong>
+</div>
+
+<div class="h-2 bg-nia-panel rounded-full overflow-hidden my-3">
+
+<div
+class="h-full ${progressColor(
+rows.length
+? ((rows.length-inputCriticalRows.length)/rows.length)*100
+:0
+)} rounded-full"
+style="width:${clamp(
+rows.length
+? ((rows.length-inputCriticalRows.length)/rows.length)*100
+:0
+)}%">
+</div>
+
+</div>
+
+<hr class="border-nia-hair my-2">
+
+${inputCriticalRows.slice(0,5).map(r=>`
+<div class="flex justify-between text-sm">
+
+<span>${esc(r[metric])}</span>
+
+<strong class="text-red-700">
+${esc(r[status])}
+</strong>
+
+</div>
+`).join("")}
+
+`,
 
   
     let value = r[current];
@@ -3874,16 +3986,113 @@ if (String(r[metric]).trim() === "Member Wallet") {
     const totalOccupied=rows.reduce((a,r)=>a+(toNum(r[occupied])||0),0);
     const worst=rows.slice().sort((a,b)=>(toNum(a[variance])||0)-(toNum(b[variance])||0))[0];
     host.innerHTML =
-      cockpitCard("Active Occupancy", fmt(totalContracted ? totalOccupied/totalContracted*100 : 0,"pct"), barRows(rows.map(r=>({label:r[theatre], value:`${fmt(toNum(r[pct]),"pct")}`, width:toNum(r[pct])||0, alert:(toNum(r[pct])||0)<90}))), "building-2") +
+     cockpitCard(
+  "Active Occupancy",
+  fmt(totalContracted ? totalOccupied / totalContracted * 100 : 0, "pct"),
+  `
+<div class="space-y-1 text-sm mb-3">
+
+  <div class="flex justify-between">
+    <span class="text-nia-mute">Occupied</span>
+    <strong>${inr(totalOccupied)}</strong>
+  </div>
+
+  <div class="flex justify-between">
+    <span class="text-nia-mute">Target</span>
+    <strong>${inr(totalContracted)}</strong>
+  </div>
+
+</div>
+
+<div class="h-2 bg-nia-panel rounded-full overflow-hidden mb-3">
+  <div
+    class="h-full ${progressColor(totalContracted ? totalOccupied / totalContracted * 100 : 0)} rounded-full" rounded-full"
+    style="width:${clamp(totalContracted ? totalOccupied / totalContracted * 100 : 0)}%">
+  </div>
+</div>
+
+<div class="flex justify-between text-sm font-semibold">
+  <span class="text-green-700">
+    ${fmt(totalContracted ? totalOccupied / totalContracted * 100 : 0, "pct")} Done
+  </span>
+
+  <span class="text-red-700">
+    ${fmt(100 - (totalContracted ? totalOccupied / totalContracted * 100 : 0), "pct")} Left
+  </span>
+</div>
+
+<hr class="my-3 border-nia-hair">
+
+${rows
+  .sort((a, b) => (toNum(b[pct]) || 0) - (toNum(a[pct]) || 0))
+  .map(r => `
+<div class="border-t border-nia-hair pt-2 mt-2">
+
+  <div class="flex justify-between text-sm font-semibold">
+    <span>${esc(r[theatre])}</span>
+    <span>${fmt(toNum(r[pct]), "pct")}</span>
+  </div>
+
+  <div class="flex justify-between text-xs text-nia-mute mt-1">
+    <span>Occ ${inr(toNum(r[occupied]))}</span>
+    <span>Target ${inr(toNum(r[contracted]))}</span>
+  </div>
+
+</div>
+`).join("")}
+`,
+  "building-2"
+) +
       
 cockpitCard(
   "Focus Theatre",
-  esc(worst?.[theatre] || "--"),
-  `<div class="text-sm text-nia-mute leading-relaxed">
-${focus.theatre} carries the largest active-theatre variance and lowest occupancy.
+  `⚠ ${esc(worst?.[theatre] || "--")}`,
+  `
+<div class="space-y-2 text-sm">
 
-Daily behavior: ${focus.behavior}
-</div>`,
+  <div class="flex justify-between">
+    <span class="text-nia-mute">Occupancy</span>
+    <strong>${fmt(toNum(worst?.[pct]),"pct")}</strong>
+  </div>
+
+  <div class="flex justify-between">
+    <span class="text-nia-mute">Occupied</span>
+    <strong>${inr(toNum(worst?.[occupied]))}</strong>
+  </div>
+
+  <div class="flex justify-between">
+    <span class="text-nia-mute">Target</span>
+    <strong>${inr(toNum(worst?.[contracted]))}</strong>
+  </div>
+
+  <div class="flex justify-between">
+    <span class="text-nia-mute">Gap</span>
+    <strong class="text-red-700">
+      ${inr((toNum(worst?.[contracted])||0) - (toNum(worst?.[occupied])||0))}
+    </strong>
+  </div>
+
+  <div class="h-2 bg-nia-panel rounded-full overflow-hidden">
+    <div
+      class="h-full bg-red-500 rounded-full"
+      style="width:${clamp(toNum(worst?.[pct])||0)}%">
+    </div>
+  </div>
+
+  <div class="pt-2 border-t border-nia-hair">
+
+    <div class="text-xs uppercase tracking-wide text-nia-mute mb-1">
+      Daily Behavior
+    </div>
+
+    <div class="text-sm text-nia-body">
+      ${focus.behavior}
+    </div>
+
+  </div>
+
+</div>
+`,
   "radar"
 );    return;
   }
@@ -3897,16 +4106,121 @@ Daily behavior: ${focus.behavior}
     const byDriver={};
     rows.forEach(r=>{ const key=r[primary]||"Other"; byDriver[key]=(byDriver[key]||0)+1; });
     host.innerHTML =
-      cockpitCard("Highest Drag Entity", esc(top?.[entity] || "–"), `<div class="text-sm text-nia-mute leading-relaxed">${esc(top?.[theatre] || "")} · score ${esc(top?.[score] || "–")}. This is the first entity to discuss in the daily drag review.</div>`, "siren") +
-      cockpitCard("Drag Mix", `${rows.length} entities`, barRows(Object.entries(byDriver).map(([label,value])=>({label,value:inr(value),width:clamp(value/rows.length*100),alert:label!=="Collections"})), "red"), "layers") +
+      (() => {
+
+  // Theatre Summary
+  const theatreSummary = {};
+
+  rows.forEach(r => {
+
+    const t = r[theatre] || "Other";
+
+    if (!theatreSummary[t]) {
+      theatreSummary[t] = {
+        score: 0,
+        count: 0
+      };
+    }
+
+    theatreSummary[t].score += toNum(r[score]) || 0;
+    theatreSummary[t].count++;
+
+  });
+
+  const summary = Object.entries(theatreSummary)
+    .map(([t,v]) => ({
+      theatre: t,
+      avg: v.score / v.count,
+      count: v.count
+    }))
+    .sort((a,b)=>b.avg-a.avg);
+
+  const overall =
+    summary.reduce((a,r)=>a+r.avg,0)/(summary.length||1);
+
+  return cockpitCard(
+
+    "Drag Score",
+
+    fmt(overall,"num"),
+
+    `
+${summary.map(r=>`
+
+<div class="border-t border-nia-hair pt-2 mt-2">
+
+<div class="flex justify-between">
+
+<strong>${esc(r.theatre)}</strong>
+
+<strong>${fmt(r.avg,"num")}</strong>
+
+</div>
+
+<div class="text-xs text-nia-mute mt-1">
+
+${r.count} entities
+
+</div>
+
+</div>
+
+`).join("")}
+`,
+    "siren"
+
+  );
+
+})() +
+      cockpitCard(
+  "Primary Drivers",
+  `${rows.length} entities`,
+  `
+${Object.entries(byDriver)
+.sort((a,b)=>b[1]-a[1])
+.map(([label,value])=>`
+
+<div class="border-t border-nia-hair pt-2 mt-2">
+
+  <div class="flex justify-between">
+
+    <strong>${esc(label)}</strong>
+
+    <strong>${value}</strong>
+
+  </div>
+
+  <div class="h-2 bg-nia-panel rounded-full mt-2 overflow-hidden">
+
+    <div
+      class="h-full ${label==="Collections"?"bg-green-600":"bg-red-500"} rounded-full"
+      style="width:${clamp(value/rows.length*100)}%">
+    </div>
+
+  </div>
+
+</div>
+
+`).join("")}
+`,
+  "layers"
+) +
 (() => {
 
   const drag = state.data["Drag Scores"];
 
-  let title = "One owner";
-  let text =
-    "Every entity above 15 needs one owner, a clear action path and a next review date.";
+  let highDrag = rows.filter(r => (toNum(r[score]) || 0) >= 15).length;
 
+let title =
+  highDrag === 0
+    ? "Under Control"
+    : `${highDrag} High Drag Entities`;
+
+let text =
+  highDrag === 0
+    ? "All entities are below the drag threshold. Maintain review cadence."
+    : `${highDrag} entities have a drag score above 15. Assign one owner, define the blocker, and agree on the next review date.`;
+  
   if (drag && drag.rows && drag.rows.length) {
 
     const primary = String(drag.rows[0][4] || "");
@@ -4013,7 +4327,7 @@ console.log("nests column index =", nests);
     const byCorridor={};
     rows.forEach(r=>{ const key=r[corridor]||"Other"; byCorridor[key]=(byCorridor[key]||0)+(toNum(r[expected])||0); });
     host.innerHTML =
-      cockpitCard("Easy Expected Nests", inr(Math.round(totalExpected)), `<div class="h-2 bg-nia-panel rounded-full overflow-hidden mb-4"><div class="h-full bg-nia-blue rounded-full" style="width:${clamp(totalExpected/900*100)}%"></div></div><div class="text-sm text-nia-mute">Model-selected set covers ${inr(totalPotential)} potential nests and ${inr(Math.round(totalExpected))} expected nests.</div>`, "gauge") +
+      cockpitCard("Easy Expected Nests", inr(Math.round(totalExpected)), `<div class="h-2 bg-nia-panel rounded-full overflow-hidden mb-4"><div class="h-full ${progressColor(totalContracted ? totalOccupied / totalContracted * 100 : 0)} rounded-full" rounded-full" style="width:${clamp(totalExpected/900*100)}%"></div></div><div class="text-sm text-nia-mute">Model-selected set covers ${inr(totalPotential)} potential nests and ${inr(Math.round(totalExpected))} expected nests.</div>`, "gauge") +
       cockpitCard("Top Close", esc(top?.[prospect] || "–"), `<div class="text-sm text-nia-mute leading-relaxed">${esc(top?.[corridor] || "")} · ease ${Math.round(toNum(top?.[ease]) || 0)} · expected ${esc(top?.[expected] || "–")} nests.</div>`, "badge-check") +
       cockpitCard("Where To Push", "Farukhnagar", barRows(Object.entries(byCorridor).map(([label,value])=>({label,value: inr(Math.round(value)),width:clamp(value/(totalExpected||1)*100)}))), "map-pin");
     return;
@@ -4089,7 +4403,9 @@ console.log("nests column index =", nests);
     const pct=readCol(d,["Collection %"]);
     const score=readCol(d,["Collection Score"]);
     const totalDue=rows.reduce((a,r)=>a+(toNum(r[due])||0),0);
-    const worst=rows.slice().sort((a,b)=>(toNum(b[due])||0)-(toNum(a[due])||0))[0];
+    const worst = rows
+  .slice()
+  .sort((a,b)=>(toNum(a[pct])||0) - (toNum(b[pct])||0))[0];
     const byTheatre={};
     rows.forEach(r=>{ const key=r[theatre]||"Other"; byTheatre[key]=(byTheatre[key]||0)+(toNum(r[due])||0); });
     host.innerHTML =
@@ -4149,9 +4465,61 @@ cockpitCard(
       return;
     }
     const totalNet=rows.reduce((a,r)=>a+(toNum(r[net])||0),0);
+    const totalCheckIn = rows.reduce((a,r)=>a+(toNum(r[ci])||0),0);
+const totalCheckOut = rows.reduce((a,r)=>a+(toNum(r[co])||0),0);
+
+// Theatre-wise summary
+const theatreSummary = {};
+
+rows.forEach(r => {
+  const t = r[theatre] || "Other";
+
+  if (!theatreSummary[t]) {
+    theatreSummary[t] = {
+      checkIn: 0,
+      checkOut: 0,
+      net: 0
+    };
+  }
+
+  theatreSummary[t].checkIn += toNum(r[ci]) || 0;
+  theatreSummary[t].checkOut += toNum(r[co]) || 0;
+  theatreSummary[t].net += toNum(r[net]) || 0;
+});
     const worst=rows.slice().sort((a,b)=>(toNum(a[net])||0)-(toNum(b[net])||0))[0];
     host.innerHTML =
-      cockpitCard("Net Movement (Month)", inr(totalNet), barRows(rows.slice(0,6).map(r=>({label:r[studio],value:inr(toNum(r[net])||0),width:clamp(Math.abs(toNum(r[net])||0)/80*100),alert:(toNum(r[net])||0)<0})), "red"), "door-open") +
+${Object.entries(theatreSummary)
+.sort((a,b)=>b[1].net-a[1].net)
+.map(([t,v])=>`
+<div class="border-t border-nia-hair pt-2 mt-2">
+
+  <div class="font-semibold text-sm mb-1">
+    ${esc(t)}
+  </div>
+
+  <div class="flex justify-between text-xs">
+
+    <span>
+      CI :
+      <strong>${inr(v.checkIn)}</strong>
+    </span>
+
+    <span>
+      CO :
+      <strong>${inr(v.checkOut)}</strong>
+    </span>
+
+    <span>
+      Net :
+      <strong class="${v.net >= 0 ? "text-green-700" : "text-red-700"}">
+        ${v.net >= 0 ? "+" : ""}${inr(v.net)}
+      </strong>
+    </span>
+
+  </div>
+
+</div>
+`).join("")} +
       cockpitCard("Largest Leak", esc(worst?.[studio] || "–"), `<div class="text-sm text-nia-mute leading-relaxed">${esc(worst?.[theatre] || "")} · ${esc(worst?.[ci] || "0")} check-ins / ${esc(worst?.[co] || "0")} check-outs this month. This studio is losing the most bodies, not just revenue.</div>`, "log-out") +
       cockpitCard("Behavior Rule", "Retention before refill", `<div class="text-sm text-nia-mute leading-relaxed">If net movement is negative, first diagnose why people are leaving, then refill. Otherwise demand creation leaks out the back door.</div>`, "shield-alert");
     return;
