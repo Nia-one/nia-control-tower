@@ -3819,67 +3819,10 @@ ${esc(r[status])}
 
 </div>
 `).join("")}
-
-
-
-  
-    let value = r[current];
-
-    console.log(
-        "Compare:",
-        JSON.stringify(String(r[metric]).trim()),
-        JSON.stringify("EBITDA gap")
-    );
-        console.log(
-    "Compare:",
-    JSON.stringify(String(r[metric]).trim()),
-    JSON.stringify("EBITDA gap")
-);
-
-if (String(r[metric]).trim() === "EBITDA gap") {
-    console.log("✅ EBITDA MATCH", r[gap]);
-    value = r[gap];
-}
-        console.log("Metric:", String(r[metric]).trim(), "Value:", value);
-
-    // B2B from live CM Actions
- console.log("DOR Metric =", "[" + String(r[metric]).trim() + "]");
-
-if (String(r[metric]).trim() === "B2B 500 nests CM") {
-
-    console.log("✅ B2B MATCH FOUND");
-
-    value = livePriority("Close B2B conversion").currentRate;
-}
-    // Collections from live Collections
-   if (String(r[metric]).trim() === "Collections recovery") {
-
-    console.log("✅ COLLECTION MATCH FOUND");
-
-    value = livePriority("Recover collections").currentRate;
-}
-        console.log(
-    "Compare:",
-    JSON.stringify(String(r[metric]).trim()),
-    JSON.stringify("Member Wallet")
-);
-
-if (String(r[metric]).trim() === "Member Wallet") {
-    console.log("✅ MEMBER WALLET MATCH", value);
-    value = fmt(toNum(value), "rupees_to_lakhs");
-}
-    return {
-        label: r[metric],
-        value: value,
-        width: clamp(
-            (toNum(value) || 0) /
-            (toNum(r[target]) || Math.max(toNum(value) || 1, 1)) * 100
-        ),
-        alert: String(r[status]).includes("Critical")
-    };
-
-}), "red"), "calendar-days") +
-      cockpitCard(
+`,
+"calendar-days"
+) +
+cockpitCard(
   "Current Focus",
   `${inputCriticalRows.length} critical inputs`,
   `
