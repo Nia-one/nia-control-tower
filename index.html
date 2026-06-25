@@ -4364,44 +4364,34 @@ console.log("nests column index =", nests);
     const byTheatre={};
     rows.forEach(r=>{ const key=r[theatre]||"Other"; byTheatre[key]=(byTheatre[key]||0)+(toNum(r[due])||0); });
     host.innerHTML =
+// ✅ SAFE VERSION — no collected column needed
+host.innerHTML =
 cockpitCard(
   "Collection Recovery",
-  fmt(100 - (totalDue / (totalDue + rows.reduce((a,r)=>a+(toNum(r[score])||0),0)) * 100), "pct"),
+  `${fmt(totalDue, "lakhs")}L Due`,   // ← sirf due dikhao, fake pct nahi
   `
 <div class="space-y-1 text-sm mb-3">
-
   <div class="flex justify-between">
-    <span class="text-nia-mute">Recovered</span>
-    <strong>${fmt(rows.reduce((a,r)=>a+(toNum(r[score])||0),0),"lakhs")}L</strong>
+    <span class="text-nia-mute">Total Due</span>
+    <strong class="text-red-700">${fmt(totalDue, "lakhs")}L</strong>
   </div>
-
   <div class="flex justify-between">
-    <span class="text-nia-mute">Target</span>
-    <strong>${fmt(totalDue + rows.reduce((a,r)=>a+(toNum(r[score])||0),0),"lakhs")}L</strong>
-  </div>
-
-</div>
-
-<div class="h-2 bg-nia-panel rounded-full overflow-hidden mb-3">
-  <div
-    class="h-full bg-nia-clay rounded-full"
-    style="width:${clamp(100 - (totalDue/(totalDue + rows.reduce((a,r)=>a+(toNum(r[score])||0),0))*100))}%">
+    <span class="text-nia-mute">Studios with Due</span>
+    <strong>${rows.filter(r => (toNum(r[due]) || 0) > 0).length}</strong>
   </div>
 </div>
-
-<div class="flex justify-between text-sm font-semibold">
-  <span class="text-green-700">
-    ${fmt(100 - (totalDue/(totalDue + rows.reduce((a,r)=>a+(toNum(r[score])||0),0))*100),"pct")} Done
-  </span>
-
-  <span class="text-red-700">
-    ${fmt(totalDue/(totalDue + rows.reduce((a,r)=>a+(toNum(r[score])||0),0))*100,"pct")} Left
-  </span>
+<div class="space-y-1">
+  ${rows.slice().sort((a,b) => (toNum(b[due])||0) - (toNum(a[due])||0))
+    .slice(0,5).map(r => `
+    <div class="flex justify-between text-sm">
+      <span class="text-nia-mute truncate">${esc(r[studio] ?? r[0])}</span>
+      <strong class="text-red-700">${fmt(toNum(r[due])||0,"lakhs")}L</strong>
+    </div>
+  `).join("")}
 </div>
 `,
   "hand-coins"
-) +
-      cockpitCard("Worst Studio", esc(worst?.[studio] || "–"), `<div class="text-sm text-nia-mute leading-relaxed">${esc(worst?.[theatre] || "")} · due ${esc(worst?.[due] || "–")}L · collection ${esc(worst?.[pct] || "–")}%. Treat this as a named recovery action, not a generic reminder.</div>`, "alert-triangle") +
+) +      cockpitCard("Worst Studio", esc(worst?.[studio] || "–"), `<div class="text-sm text-nia-mute leading-relaxed">${esc(worst?.[theatre] || "")} · due ${esc(worst?.[due] || "–")}L · collection ${esc(worst?.[pct] || "–")}%. Treat this as a named recovery action, not a generic reminder.</div>`, "alert-triangle") +
       cockpitCard("Score Rule", "Due + pace", `<div class="text-sm text-nia-mute leading-relaxed">Collection score punishes large dues, zero recent member-fee pace, pending subhead, and review count. Source-name mismatches remain a data-quality drag.</div>`, "receipt-text");
     return;
   }
