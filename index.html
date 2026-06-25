@@ -3678,7 +3678,7 @@ function renderCockpit(){
     label: r[0],
     value: `${p.left}% left`,
     width: p.done,
-    alert: String(r[5]).includes("Critical")
+    alert: p.left > 0
   };
 });
     host.innerHTML =
