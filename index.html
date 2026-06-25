@@ -2862,7 +2862,58 @@ if (width != null) {
         <span class="inline-flex items-center gap-1 ${isAlert ? "text-nia-clay" : "text-nia-blue"}"><i data-lucide="${trend.icon}" class="w-4 h-4"></i> ${esc(trend.dir)}</span>
       </div>`;
     }
+let extraInfo = "";
 
+if (k.label === "EBITDA gap (₹L)") {
+
+  const target = aggregateOn(ti,{
+    agg:"read",
+    row:"EBITDA gap",
+    col:"Target"
+  });
+
+  const current = aggregateOn(ti,{
+    agg:"read",
+    row:"EBITDA gap",
+    col:"Current"
+  });
+
+  const gap = aggregateOn(ti,{
+    agg:"read",
+    row:"EBITDA gap",
+    col:"Gap"
+  });
+
+  const done = target > 0 ? (current/target)*100 : 0;
+  const left = 100 - done;
+
+  extraInfo = `
+    <div class="mt-3 space-y-1 text-sm">
+
+      <div class="flex justify-between">
+        <span class="text-nia-mute">Target</span>
+        <strong>${fmt(target,"lakhs")}</strong>
+      </div>
+
+      <div class="flex justify-between">
+        <span class="text-nia-mute">Achieved</span>
+        <strong>${fmt(current,"lakhs")}</strong>
+      </div>
+
+      <div class="flex justify-between">
+        <span class="text-nia-mute">Done</span>
+        <strong>${done.toFixed(1)}%</strong>
+      </div>
+
+      <div class="flex justify-between">
+        <span class="text-nia-mute">Left</span>
+        <strong>${left.toFixed(1)}%</strong>
+      </div>
+
+    </div>
+  `;
+}
+    
     card.innerHTML += `
       <div class="text-[11px] font-semibold text-nia-mute uppercase tracking-widest mb-3 flex items-center justify-between">
         <span class="min-w-0 pr-3">${esc(k.label)}</span>
@@ -2878,6 +2929,7 @@ if (width != null) {
 }
 </div>
      ${progressHtml}
+     ${extraInfo}
 
 ${
   k.tab === "CM Actions" && k.label === "CM plan achieved"
