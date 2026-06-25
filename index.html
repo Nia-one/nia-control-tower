@@ -4210,7 +4210,8 @@ cockpitCard(
     ${fmt(100-(totalStudio ? totalEss/(totalStudio*0.10)*100 : 0),"pct")} Left
   </span>
 </div>
-`,, , "shopping-basket") +
+`, 
+  "shopping-basket") +
       cockpitCard("Member Base Touched", inr(rows.reduce((a,r)=>a+(toNum(r[members])||0),0)), barRows(rows.map(r=>({label:r[theatre], value:inr(toNum(r[members])||0), width:clamp((toNum(r[members])||0)/(Math.max(...rows.map(x=>toNum(x[members])||0),1))*100)}))), "users") +
       cockpitCard("Copy Playbook", esc(best?.[theatre] || "–"), `<div class="text-sm text-nia-mute leading-relaxed">Wellington is already above the attach hurdle. Turn its check-in script into the default bundle motion across Rajputana and Deccan.</div>`, "copy-check");
     return;
