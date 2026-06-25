@@ -2902,7 +2902,19 @@ ${
          <div class="text-sm font-bold text-[#7F2F2D]">${(s => s.charAt(0).toUpperCase() + s.slice(1))(k.label.replace(/^Active\s+/i, ''))} Needs Action</div>
           <i data-lucide="arrow-right-circle" class="w-4 h-4 text-nia-clay"></i>
         </div>
-        <div class="text-xs text-[#7F2F2D] font-medium mb-2">Currently at ${fmt(val,k.fmt)}</div>
+        <div class="text-xs text-[#7F2F2D] font-medium mb-2">Currently at ${
+  k.label === "FONO Onboarded (Live)"
+    ? `${inr(val)} Nests`
+  : k.label === "FONO potential nests"
+    ? `${inr(val)} Nests`
+  : k.label === "Net movement (month)"
+    ? `${inr(val)} Members`
+  : k.label === "Priority workstreams"
+    ? `${inr(val)} Workstreams`
+  : fmt(val, k.fmt)
+}
+}
+</div>
         <div class="text-xs text-[#7F2F2D] bg-white/60 py-1 px-2 rounded-sm font-semibold inline-block">Action: ${actionText}</div>
       `;
       actionCards.appendChild(actionCard);
