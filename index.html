@@ -3657,7 +3657,13 @@ function renderCockpit(){
 
   if(tab==="Priorities"){
     const critical=rows.filter(r=>String(r[5]).toLowerCase().includes("critical")).length;
-    const progressRows = rows.map(r => {
+    const progressRows = rows
+.sort((a, b) => {
+  const pa = livePriority(a[0]) || { left: 100 };
+  const pb = livePriority(b[0]) || { left: 100 };
+  return pb.left - pa.left;
+})
+.map(r => {s.map(r => {
   const p = livePriority(r[0]) || {
     done: 0,
     left: 100,
