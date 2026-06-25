@@ -3920,11 +3920,13 @@ console.log("nests column index =", nests);
     const visitedCol    = readCol(d,["Visited"]);
     const contractingCol= readCol(d,["Contracting"]);
     const liveCol       = readCol(d,["Onboarded (Live)"]);
+    const pendingCol    = readCol(d,["Onboarded (Pending Handover)"]);
     const droppedCol    = readCol(d,["Lost/Dropped"]);
     const totalCol      = readCol(d,["Total Nests"]);
     const totalVisited     = rows.reduce((a,r)=>a+(toNum(r[visitedCol])||0),0);
     const totalContracting = rows.reduce((a,r)=>a+(toNum(r[contractingCol])||0),0);
     const totalLive        = rows.reduce((a,r)=>a+(toNum(r[liveCol])||0),0);
+    const totalPending     = rows.reduce((a,r)=>a+(toNum(r[pendingCol])||0),0);
     const totalDropped     = rows.reduce((a,r)=>a+(toNum(r[droppedCol])||0),0);
     const totalNests       = rows.reduce((a,r)=>a+(toNum(r[totalCol])||0),0);
     host.innerHTML =
@@ -3934,11 +3936,12 @@ console.log("nests column index =", nests);
         "flag") +
       cockpitCard("Stage Bottleneck", inr(totalVisited) + " visited",
         barRows([
-          {label:"Visited",      value:inr(totalVisited),     width:clamp(totalVisited/totalNests*100),     alert:true},
-          {label:"Contracting",  value:inr(totalContracting), width:clamp(totalContracting/totalNests*100), alert:totalContracting<50},
-          {label:"Live",         value:inr(totalLive),        width:clamp(totalLive/totalNests*100)},
-          {label:"Lost/Dropped", value:inr(totalDropped),     width:clamp(totalDropped/totalNests*100),     alert:totalDropped>200}
-        ], "red"),
+  {label:"Visited",           value:inr(totalVisited),     width:clamp(totalVisited/totalNests*100),     alert:true},
+  {label:"Contracting",       value:inr(totalContracting), width:clamp(totalContracting/totalNests*100), alert:totalContracting<50},
+  {label:"Live",              value:inr(totalLive),        width:clamp(totalLive/totalNests*100)},
+  {label:"Pending Handover",  value:inr(totalPending),     width:clamp(totalPending/totalNests*100)},
+  {label:"Lost/Dropped",      value:inr(totalDropped),     width:clamp(totalDropped/totalNests*100),     alert:totalDropped>200}
+], "red")
         "funnel") +
       cockpitCard("Conversion Behavior", "48h SLA",
         '<div class="text-sm text-nia-mute leading-relaxed">Visited owners are not progress until they move to contracting. Make every visit produce standard commercials, deposit ask, owner, and next date.</div>',
