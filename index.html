@@ -2419,7 +2419,7 @@ function fmt(v,f){
       return (n/100000).toFixed(2) + " L";
 
     case "nests":
-      return inr(Math.abs(Math.round(n))) + " Nests";
+    return "### " + inr(Math.abs(Math.round(n))) + " Nests ###";
 
     case "members":
       return (n>0?"+":"") + inr(Math.round(n)) + " Members";
