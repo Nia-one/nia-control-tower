@@ -3159,7 +3159,7 @@ if(name === "Work"){
           const recovery = totOut > 0 ? clamp(Math.round(totIn / totOut * 100)) : (totalNet >= 0 ? 100 : 0);
           base.currentRate = inr(totalNet) + " net";
           if(worst){
-            base.driver   = worst.name + ": " + inr(worst.net);
+            base.driver   = "Target For 100% Refill";
           }
           base.askRate  = "0+ net movement";
           // Big number shows the real net figure, not a fake percentage.
@@ -3384,7 +3384,7 @@ const PRIORITY_PROGRESS = {
     left: 46,
     currentRate: "37.4L collected",
     askRate: "22.6L recovery",
-    driver: "Top due: 2.47L",
+    driver: "TBD",
     unit: "Action"
   },
   "Stop check-out leakage": {
