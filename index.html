@@ -2515,6 +2515,7 @@ function renderRecordCards(data, rows, numCols){
   "WK4",
   "Trend",
   "Last synced"
+    "Variance (₹L)"
 ];
 
 const keep = originalHeaders
@@ -2523,10 +2524,11 @@ const keep = originalHeaders
   const h = x.h.toLowerCase().replace(":", "").trim();
 
   return !(
-    h.startsWith("wk") ||
-    h.startsWith("week") ||
-    h.includes("trend")
-  );
+  h.startsWith("wk") ||
+  h.startsWith("week") ||
+  h.includes("trend") ||
+  HIDDEN_FIELDS.map(f => f.toLowerCase()).includes(h)
+);
 });
 
 const headers = keep.map(x => originalHeaders[x.i]);
