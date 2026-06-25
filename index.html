@@ -3421,6 +3421,7 @@ const PRIORITY_PROGRESS = {
 
 function progressPriorityCard(r){
   const p={done:0,left:100,currentRate:"–",askRate:"–",driver:"–",unit:"Progress", ...livePriority(r[0])};
+  console.log("CARD:", r[0], "DRIVER:", p.driver);
   const done=clamp(p.done);
   const left=clamp(100-done);
   const risk=r[5];
