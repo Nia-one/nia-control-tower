@@ -3112,7 +3112,15 @@ const askCol    = readCol(dd,["Ask Rate"]);
 
     if(row){
 
-      base.currentRate = fmt(toNum(row[currentCol]), "rupees_to_lakhs");
+      
+      const current = toNum(row[currentCol]);
+
+const target = 652824.5;      // Static target (₹)
+const gap = target - current;
+
+base.currentRate = fmt(current, "rupees_to_lakhs");
+base.gapLabel    = fmt(gap, "rupees_to_lakhs") + " CM gap";
+      
 
       base.driver ="Target For 10% Attach";
    
@@ -3121,7 +3129,6 @@ base.left = Math.round(toNum(row[leftCol]) || 0);
 
 base.askRate = String(row[askCol]);
 
-base.currentRate = fmt(toNum(row[currentCol]), "rupees_to_lakhs");
 
   }}}      
       // Work
