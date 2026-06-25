@@ -3087,7 +3087,7 @@ const askCol    = readCol(dd,["Ask Rate"]);
 
     if(row){
 
-      base.currentRate = row[currentCol];
+      base.currentRate = fmt(toNum(row[currentCol]), "rupees_to_lakhs");
 
       base.driver ="Target For 10% Attach";
    
@@ -3096,7 +3096,7 @@ base.left = Math.round(toNum(row[leftCol]) || 0);
 
 base.askRate = String(row[askCol]);
 
-base.currentRate = row[currentCol];
+base.currentRate = fmt(toNum(row[currentCol]), "rupees_to_lakhs");
 
   }}}      
       // Work
