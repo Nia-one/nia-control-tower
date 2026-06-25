@@ -3768,60 +3768,33 @@ function renderCockpit(){
     const firstCritical=inputCriticalRows[0] || criticalRows[0] || rows[0];
     const series=firstCritical ? wkCols.map(ci=>firstCritical[ci]) : [];
     host.innerHTML =
-      cockpitCard(
-  "Daily Ops Review",
-  `${inputCriticalRows.length} Critical`,
-  `
-<div class="space-y-2">
+      cockpitCard("Daily Ops Review", `${inputCriticalRows.length} red inputs`,
+      barRows(rows.map(r => {
 
-<div class="flex justify-between">
-<span class="text-nia-mute">Critical Inputs</span>
-<strong class="text-red-700">${inputCriticalRows.length}</strong>
-</div>
+          let value = r[current];
 
-<div class="flex justify-between">
-<span class="text-nia-mute">Watch Items</span>
-<strong class="text-amber-600">${rows.filter(r=>String(r[status]).toLowerCase().includes("watch")).length}</strong>
-</div>
+          ...
+          // EBITDA
+          ...
+          // B2B
+          ...
+          // Collections
+          ...
+          // Member Wallet
+          ...
 
-<div class="flex justify-between">
-<span class="text-nia-mute">Healthy</span>
-<strong class="text-green-700">${rows.filter(r=>String(r[status]).toLowerCase().includes("good")).length}</strong>
-</div>
+          return {
+              label: r[metric],
+              value: value,
+              width: clamp(
+                  (toNum(value) || 0) /
+                  (toNum(r[target]) || Math.max(toNum(value) || 1, 1)) * 100
+              ),
+              alert: String(r[status]).includes("Critical")
+          };
 
-<div class="h-2 bg-nia-panel rounded-full overflow-hidden my-3">
-
-<div
-class="h-full ${progressColor(
-rows.length
-? ((rows.length-inputCriticalRows.length)/rows.length)*100
-:0
-)} rounded-full"
-style="width:${clamp(
-rows.length
-? ((rows.length-inputCriticalRows.length)/rows.length)*100
-:0
-)}%">
-</div>
-
-</div>
-
-<hr class="border-nia-hair my-2">
-
-${inputCriticalRows.slice(0,5).map(r=>`
-<div class="flex justify-between text-sm">
-
-<span>${esc(r[metric])}</span>
-
-<strong class="text-red-700">
-${esc(r[status])}
-</strong>
-
-</div>
-`).join("")}
-`,
-"calendar-days"
-) +
+      }), "red"),
+      "calendar-days") +
 cockpitCard(
   "Current Focus",
   `${inputCriticalRows.length} critical inputs`,
