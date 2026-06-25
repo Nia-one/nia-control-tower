@@ -2958,7 +2958,7 @@ console.log("FONO priority matched:", name);
           : fd.rows.reduce((a,r)=>a+(toNum(r[col])||0),0);
         const visited = sum(visitedCol);
         const live    = sum(liveCol);
-        if(visited != null) base.driver = "Target: 3500 Addtional Nest";
+        if(visited != null) base.driver = "Target for 3500 Addtional Nest";
         if(live != null){
           base.currentRate = inr(live) + " live nests";
           base.done = clamp(Math.round(live / 3500 * 100));
@@ -3001,7 +3001,7 @@ console.log(sd.headers);
           const occPct     = contracted ? occupied / contracted * 100 : 0;
           const gap = Math.max(contracted - occupied, 0); // Contracted - Occupied
           base.currentRate = (Math.round(occPct * 10) / 10) + "% occupancy";
-          base.driver = inr(gap) + " nests short";
+          base.driver = Target For 94% Occupancy;
           base.gapLabel = inr(gap) + " nests";
           base.done = clamp(Math.round(occPct));
           base.left = 100 - base.done;
@@ -3032,7 +3032,7 @@ console.log(sd.headers);
                           : Math.max(plan - realized, 0);
           const achPct   = plan ? Math.round(realized / plan * 100) : 0;
           base.currentRate = (Math.round(realized * 100) / 100) + "L realised";
-          base.driver      = (Math.round(gap * 100) / 100) + "L CM gap";
+          base.driver      = Target For 870 Nest;
           base.gapLabel    = (Math.round(gap * 100) / 100) + "L gap";
           base.done = clamp(achPct);
           base.left = 100 - base.done;
@@ -3072,12 +3072,7 @@ const askCol    = readCol(dd,["Ask Rate"]);
 
       base.currentRate = row[currentCol];
 
-      base.driver =
-        (toNum(row[gapCol]) || 0).toFixed(2) + "L gap";
-
-      base.gapLabel =
-        (toNum(row[gapCol]) || 0).toFixed(2) + "L gap";
-
+      base.driver =Target For 10% Attech
    
         base.done = Math.round(toNum(row[doneCol]) || 0);
 base.left = Math.round(toNum(row[leftCol]) || 0);
@@ -3115,7 +3110,7 @@ if(name === "Work"){
       base.left = 100-base.done;
 
       base.currentRate = realized + "L realised";
-      base.driver = gap + "L gap";
+      base.driver = Fono + FLipkart;
       base.gapLabel = gap + "L gap";
 
       const today = new Date();
