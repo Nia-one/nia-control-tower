@@ -1933,15 +1933,15 @@ const CONFIG = {
   trend:"down"
 },
     { tab:"Studios", label:"Active occupancy", agg:"ratio", num:"Occupied", den:"Contracted", fmt:"pct", target:95, trend:"up" },
-    { tab:"FONO", label:"FONO potential nests", agg:"sum", col:"Visited", fmt:"num", trend:"up" },
-    { tab:"FONO", label:"FONO Onboarded (Live)", agg:"sum", col:"Onboarded (Live)", fmt:"num", target:3500, trend:"up" },
+    { tab:"FONO", label:"FONO potential nests", agg:"sum", col:"Visited", fmt:"nests", trend:"up" },
+    { tab:"FONO", label:"FONO Onboarded (Live)", agg:"sum", col:"Onboarded (Live)", fmt:"nests", target:3500, trend:"up" },
     { tab:"Enterprise", label:"B2B achievement", agg:"ratio", num:"Realized (₹L)", den:"Target (₹L)", fmt:"pct", target:100, trend:"up" },
     { tab:"Essentials", label:"Wallet attach", agg:"ratio", num:"Essentials Revenue (₹L)", den:"Studio Revenue (₹L)", fmt:"pct", target:3.9, trend:"up" },
     { tab:"Essentials Pilot", label:"Essential Pilot GMV (₹)", agg:"read", col:"GMV", fmt:"lakhs", trend:"up" },
     { tab:"Collections", label:"Membership fee due (₹L)", agg:"sum", col:"Due (₹L)", fmt:"lakhs", alertIfAbove:0, trend:"down" },
-    { tab:"Movement", label:"Net movement (month)", agg:"sum", col:"Net Added", fmt:"num", alertIfBelow:0, trend:"up" },
-    { tab:"FONO Ease", label:"Easy expected nests", agg:"sum", col:"Expected Nests", fmt:"num", target:900, trend:"up" },
-    { tab:"Priorities", label:"Priority workstreams", agg:"count", fmt:"num", trend:"down" }
+    { tab:"Movement", label:"Net movement (month)", agg:"sum", col:"Net Added", fmt:"members", alertIfBelow:0, trend:"up" },
+    { tab:"FONO Ease", label:"Easy expected nests", agg:"sum", col:"Expected Nests", fmt:"nests", target:900, trend:"up" },
+    { tab:"Priorities", label:"Priority workstreams", agg:"count", fmt:"workstream", trend:"down" }
   ],
 
   tabs: [
@@ -2401,21 +2401,34 @@ function inr(n){
   let out=rest+last3; if(f) out+="."+f; return (neg?"-":"")+out;
 }
 function fmt(v,f){
-  if(v==null) return "—";
 
-  if(f==="pct"){
-    return (Math.round(v*10)/10) + "%";
+  if(v==null || v==="") return "—";
+
+  const n = Number(v);
+
+  switch(f){
+
+    case "pct":
+      return Math.round(n) + "%";
+
+    case "lakhs":
+      return n.toFixed(2) + " L";
+
+    case "rupees_to_lakhs":
+      return (n/100000).toFixed(2) + " L";
+
+    case "nests":
+      return inr(Math.abs(Math.round(n))) + " Nests";
+
+    case "members":
+      return (n>0?"+":"") + inr(Math.round(n)) + " Members";
+
+    case "workstreams":
+      return inr(Math.round(n)) + " Workstreams";
+
+    default:
+      return inr(Math.round(n));
   }
-
-  if(f==="lakhs"){
-    return Number(v).toFixed(2) + " L";
-}
-
-if(f==="rupees_to_lakhs"){
-    return (Number(v)/100000).toFixed(2) + " L";
-}
-
-  return inr(v);
 }
 function clamp(n,min=0,max=100){ return Math.min(Math.max(n,min),max); }
 function esc(v){
@@ -2832,15 +2845,7 @@ if (width != null) {
   ${
   val == null
     ? "—"
-    : k.fmt === "lakhs"
-      ? fmt(val,"lakhs")
-      : k.fmt === "rupees_to_lakhs"
-        ? fmt(val,"rupees_to_lakhs")
-        : k.fmt === "pct"
-          ? `${Math.round(val)}%`
-          : k.fmt === "num"
-            ? inr(Math.round(val))
-            : Math.round(val)
+    : fmt(val, k.fmt)
 }
 </div>
      ${progressHtml}
