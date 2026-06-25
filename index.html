@@ -4066,7 +4066,7 @@ console.log("nests column index =", nests);
     ${fmt(100-(totalLive/3500*100),"pct")} Left
   </span>
 </div>
-`      "flag") +
+`  ,    "flag") +
       cockpitCard("Stage Bottleneck", inr(totalVisited) + " visited",
         barRows([
   {label:"Visited",           value:inr(totalVisited),     width:clamp(totalVisited/totalNests*100),     alert:true},
