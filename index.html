@@ -2698,6 +2698,9 @@ function renderSummary(){
   (CONFIG.summary||[]).forEach((k, idx)=>{
     const ti=tabIndexByLabel(k.tab);
     const val= k.agg==="static" ? k.value : (ti>=0 ? aggregateOn(ti,k) : null);
+    if (k.label === "Essential Pilot GMV (₹)") {
+  console.log("SUMMARY GMV =", val);
+}
     let planTotal = null;
 
 if (k.tab === "CM Actions") {
