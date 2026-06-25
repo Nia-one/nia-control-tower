@@ -2958,7 +2958,7 @@ console.log("FONO priority matched:", name);
           : fd.rows.reduce((a,r)=>a+(toNum(r[col])||0),0);
         const visited = sum(visitedCol);
         const live    = sum(liveCol);
-        if(visited != null) base.driver = "Visited: " + inr(visited) + " nests";
+        if(visited != null) base.driver = "Target: 3500 Addtional Nest";
         if(live != null){
           base.currentRate = inr(live) + " live nests";
           base.done = clamp(Math.round(live / 3500 * 100));
